@@ -22,8 +22,6 @@ import { OmnisharpLoggerObserver } from './observers/OmnisharpLoggerObserver';
 import { OmnisharpStatusBarObserver } from './observers/OmnisharpStatusBarObserver';
 import { PlatformInformation } from './platform';
 import { StatusBarItemAdapter } from './statusBarItemAdapter';
-// import { TelemetryObserver } from './observers/TelemetryObserver';
-// import TelemetryReporter from 'vscode-extension-telemetry';
 import { addJSONProviders } from './features/json/jsonContributions';
 import { ProjectStatusBarObserver } from './observers/ProjectStatusBarObserver';
 import CSharpExtensionExports from './CSharpExtensionExports';
@@ -44,7 +42,7 @@ import IInstallDependencies from './packageManager/IInstallDependencies';
 import { installRuntimeDependencies } from './InstallRuntimeDependencies';
 import { isValidDownload } from './packageManager/isValidDownload';
 import { BackgroundWorkStatusBarObserver } from './observers/BackgroundWorkStatusBarObserver';
-import { getDecompilationAuthorization } from './omnisharp/decompilationPrompt';
+import { getDotnetPackApi } from './DotnetPack';
 
 export async function activate(context: vscode.ExtensionContext): Promise<CSharpExtensionExports> {
 
@@ -148,15 +146,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<CSharp
         return null;
     }
 
-    // let telemetryObserver = new TelemetryObserver(platformInfo, () => reporter);
-    // eventStream.subscribe(telemetryObserver.post);
+    // If the dotnet bundle is installed, this will ensure the dotnet CLI is on the path.
+    await initializeDotnetPath();
 
     let networkSettingsProvider = vscodeNetworkSettingsProvider(vscode);
     let installDependencies: IInstallDependencies = async (dependencies: AbsolutePathPackage[]) => downloadAndInstallPackages(dependencies, networkSettingsProvider, eventStream, isValidDownload);
     let runtimeDependenciesExist = await ensureRuntimeDependencies(extension, eventStream, platformInfo, installDependencies);
-
-    // Prompt to authorize decompilation in this workspace
-    await getDecompilationAuthorization(context, optionProvider);
 
     // activate language services
     let langServicePromise = OmniSharp.activate(context, extension.packageJSON, platformInfo, networkSettingsProvider, eventStream, optionProvider, extension.extensionPath);
@@ -217,7 +212,8 @@ function isSupportedPlatform(platform: PlatformInformation): boolean {
     if (platform.isLinux()) {
         return platform.architecture === "x86_64" ||
             platform.architecture === "x86" ||
-            platform.architecture === "i686";
+            platform.architecture === "i686" ||
+            platform.architecture === "arm64";
     }
 
     return false;
@@ -225,4 +221,12 @@ function isSupportedPlatform(platform: PlatformInformation): boolean {
 
 async function ensureRuntimeDependencies(extension: vscode.Extension<CSharpExtensionExports>, eventStream: EventStream, platformInfo: PlatformInformation, installDependencies: IInstallDependencies): Promise<boolean> {
     return installRuntimeDependencies(extension.packageJSON, extension.extensionPath, installDependencies, eventStream, platformInfo);
+}
+
+async function initializeDotnetPath() {
+    const dotnetPackApi = await getDotnetPackApi();
+    if (!dotnetPackApi) {
+        return null;
+    }
+    return await dotnetPackApi.getDotnetPath();
 }
