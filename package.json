@@ -265,6 +265,22 @@
       "installTestPath": ".debugger/netcoredbg/netcoredbg"
     },
     {
+      "id": "Debugger",
+      "description": ".NET Core Debugger (linux / ARM64)",
+      "url": "https://github.com/Samsung/netcoredbg/releases/download/2.0.0-880/netcoredbg-linux-arm64.tar.gz",
+      "installPath": ".debugger",
+      "platforms": [
+        "linux"
+      ],
+      "architectures": [
+        "arm64"
+      ],
+      "binaries": [
+        "./netcoredbg"
+      ],
+      "installTestPath": ".debugger/netcoredbg/netcoredbg"
+    },
+    {
       "id": "Razor",
       "description": "Razor Language Server (Windows / x64)",
       "url": "https://download.visualstudio.microsoft.com/download/pr/b8678010-2cd7-4201-a5e7-ba57920607d5/a654aaa3c8090ca1751d7f7646a7b000/razorlanguageserver-win-x64-6.0.0-preview.5.21358.6.zip",
