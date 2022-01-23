@@ -29,18 +29,39 @@ then run `Extensions: Install from VSIX` from the command pallete and select the
 
 # From [OmniSharp/omnisharp-vscode](https://github.com/OmniSharp/omnisharp-vscode) README
 
-## Note about using .NET Core 3.1.40x SDKs
+## Using .NET 6 builds of OmniSharp
 
-The .NET 3.1.40x SDKs require version 16.7 of MSBuild.
+Starting with C# extension version 1.24.0, there is now an option to use build of OmniSharp that runs on the .NET 6 SDK. This build requires that the .NET 6 SDK be installed and does not use Visual Studio MSBuild tools or Mono. It only supports newer SDK-style projects that are buildable with `dotnet build`. Unity projects and other Full Framework projects are not supported.
+
+To use the .NET 6 build, set `omnisharp.useModernNet` to `true` in your VS Code settings and restart OmniSharp.
+
+## Note about using .NET Core 3.1.4xx SDKs
+
+The .NET 3.1.4xx SDKs require version 16.7 of MSBuild.
 
 For MacOS and Linux users who have Mono installed, this means you will need to set `omnisharp.useGlobalMono` to `never` until a version of Mono ships with MSBuild 16.7.
+
+You can also use the .NET 6 build of OmniSharp which runs on the .NET 6 SDK. See instructions above.
 
 ## Note about using .NET 5 SDKs
 
 The .NET 5 SDK requires version 16.8 of MSBuild.
 
 For Windows users who have Visual Studio installed, this means you will need to be on the latest Visual Studio 16.8 Preview.
+
 For MacOS and Linux users who have Mono installed, this means you will need to set `omnisharp.useGlobalMono` to `never` until a version of Mono ships with MSBuild 16.8.
+
+You can also use the .NET 6 build of OmniSharp which runs on the .NET 6 SDK. See instructions above.
+
+## Note about using .NET 6 SDKs
+
+The .NET 6 SDK requires version 16.10 of MSBuild.
+
+For Windows users who have Visual Studio installed, this means you will need to have Visual Studio 16.11 or newer installed.
+
+For MacOS and Linux users who have Mono installed, this means you will need to set `omnisharp.useGlobalMono` to `never` until a version of Mono ships with MSBuild 16.10.
+
+You can also use the .NET 6 build of OmniSharp which runs on the .NET 6 SDK. See instructions above.
 
 ### Emmet support in Razor files
 

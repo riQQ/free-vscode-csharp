@@ -8,6 +8,7 @@ import { vscode, WorkspaceConfiguration } from '../vscodeAdapter';
 export class Options {
     constructor(
         public path: string,
+        public useModernNet: boolean,
         public useGlobalMono: string,
         public waitForDebugger: boolean,
         public loggingLevel: string,
@@ -37,8 +38,10 @@ export class Options {
         public razorPluginPath?: string,
         public defaultLaunchSolution?: string,
         public monoPath?: string,
+        public dotnetPath?: string,
         public excludePaths?: string[],
-        public maxProjectFileCountForDiagnosticAnalysis?: number | null) {
+        public maxProjectFileCountForDiagnosticAnalysis?: number | null,
+        public testRunSettings?: string) {
     }
 
     public static Read(vscode: vscode): Options {
@@ -54,8 +57,10 @@ export class Options {
         const razorConfig = vscode.workspace.getConfiguration('razor');
 
         const path = Options.readPathOption(csharpConfig, omnisharpConfig);
+        const useModernNet = omnisharpConfig.get<boolean>("useModernNet", false);
         const useGlobalMono = Options.readUseGlobalMonoOption(omnisharpConfig, csharpConfig);
         const monoPath = omnisharpConfig.get<string>('monoPath', undefined) || undefined;
+        const dotnetPath = omnisharpConfig.get<string>('dotnetPath', undefined) || undefined;
 
         const waitForDebugger = omnisharpConfig.get<boolean>('waitForDebugger', false);
 
@@ -104,10 +109,13 @@ export class Options {
 
         const maxProjectFileCountForDiagnosticAnalysis = csharpConfig.get<number | null>('maxProjectFileCountForDiagnosticAnalysis', 1000);
 
+        const testRunSettings = omnisharpConfig.get<string>('testRunSettings', undefined);
+
         const excludePaths = this.getExcludedPaths(vscode);
 
         return new Options(
             path,
+            useModernNet,
             useGlobalMono,
             waitForDebugger,
             loggingLevel,
@@ -137,8 +145,10 @@ export class Options {
             razorPluginPath,
             defaultLaunchSolution,
             monoPath,
+            dotnetPath,
             excludePaths,
-            maxProjectFileCountForDiagnosticAnalysis
+            maxProjectFileCountForDiagnosticAnalysis,
+            testRunSettings
         );
     }
 
