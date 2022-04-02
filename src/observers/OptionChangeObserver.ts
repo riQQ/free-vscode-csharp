@@ -24,6 +24,20 @@ const omniSharpOptions: ReadonlyArray<OptionsKey> = [
     "organizeImportsOnFormat",
     "enableAsyncCompletion",
     "useModernNet",
+    "analyzeOpenDocumentsOnly",
+    "enableRoslynAnalyzers",
+    "inlayHintsEnableForParameters",
+    "inlayHintsForLiteralParameters",
+    "inlayHintsForObjectCreationParameters",
+    "inlayHintsForIndexerParameters",
+    "inlayHintsForOtherParameters",
+    "inlayHintsSuppressForParametersThatDifferOnlyBySuffix",
+    "inlayHintsSuppressForParametersThatMatchMethodIntent",
+    "inlayHintsSuppressForParametersThatMatchArgumentName",
+    "inlayHintsEnableForTypes",
+    "inlayHintsForImplicitVariableTypes",
+    "inlayHintsForLambdaParameterTypes",
+    "inlayHintsForImplicitObjectCreation",
 ];
 
 function OmniSharpOptionChangeObservable(optionObservable: Observable<Options>): Observable<Options> {

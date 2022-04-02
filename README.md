@@ -29,13 +29,21 @@ then run `Extensions: Install from VSIX` from the command pallete and select the
 
 # From [OmniSharp/omnisharp-vscode](https://github.com/OmniSharp/omnisharp-vscode) README
 
-## Using .NET 6 builds of OmniSharp
+## Announcements
+
+### Planned removal of the included Mono & MSBuild Tools
+
+In the future .NET Framework builds of OmniSharp will not ship with Mono or the MSBuild tooling (See announcement [omnisharp-roslyn#2339](https://github.com/OmniSharp/omnisharp-roslyn/issues/2339)). To ensure that the C# extension remains usable out of the box for .NET SDK projects, we will be changing the default value of `omnisharp.useModernNet` to `true`.
+
+See issue [#5120](https://github.com/OmniSharp/omnisharp-vscode/issues/5120) for more details.
+
+### Using .NET 6 builds of OmniSharp
 
 Starting with C# extension version 1.24.0, there is now an option to use build of OmniSharp that runs on the .NET 6 SDK. This build requires that the .NET 6 SDK be installed and does not use Visual Studio MSBuild tools or Mono. It only supports newer SDK-style projects that are buildable with `dotnet build`. Unity projects and other Full Framework projects are not supported.
 
 To use the .NET 6 build, set `omnisharp.useModernNet` to `true` in your VS Code settings and restart OmniSharp.
 
-## Note about using .NET Core 3.1.4xx SDKs
+### Note about using .NET Core 3.1.4xx SDKs
 
 The .NET 3.1.4xx SDKs require version 16.7 of MSBuild.
 
@@ -43,7 +51,7 @@ For MacOS and Linux users who have Mono installed, this means you will need to s
 
 You can also use the .NET 6 build of OmniSharp which runs on the .NET 6 SDK. See instructions above.
 
-## Note about using .NET 5 SDKs
+### Note about using .NET 5 SDKs
 
 The .NET 5 SDK requires version 16.8 of MSBuild.
 
@@ -53,7 +61,7 @@ For MacOS and Linux users who have Mono installed, this means you will need to s
 
 You can also use the .NET 6 build of OmniSharp which runs on the .NET 6 SDK. See instructions above.
 
-## Note about using .NET 6 SDKs
+### Note about using .NET 6 SDKs
 
 The .NET 6 SDK requires version 16.10 of MSBuild.
 

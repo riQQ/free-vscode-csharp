@@ -67,6 +67,10 @@ export async function goToDefinition(server: OmniSharpServer, request: protocol.
     return server.makeRequest<protocol.V2.GoToDefinitionResponse>(protocol.V2.Requests.GoToDefinition, request, token);
 }
 
+export async function goToTypeDefinition(server: OmniSharpServer, request: protocol.GoToTypeDefinitionRequest, token: vscode.CancellationToken) {
+    return server.makeRequest<protocol.GoToTypeDefinitionResponse>(protocol.Requests.GoToTypeDefinition, request, token);
+}
+
 export async function getSourceGeneratedFile(server: OmniSharpServer, request: protocol.SourceGeneratedFileRequest, token: vscode.CancellationToken) {
     return server.makeRequest<protocol.SourceGeneratedFileResponse>(protocol.Requests.SourceGeneratedFile, request, token);
 }
@@ -193,8 +197,24 @@ export async function getCompletionAfterInsert(server: OmniSharpServer, request:
     return server.makeRequest<protocol.CompletionAfterInsertResponse>(protocol.Requests.CompletionAfterInsert, request);
 }
 
+export async function fileOpen(server: OmniSharpServer, request: protocol.Request) {
+    return server.makeRequest<void>(protocol.Requests.FileOpen, request);
+}
+
+export async function fileClose(server: OmniSharpServer, request: protocol.Request) {
+    return server.makeRequest<void>(protocol.Requests.FileClose, request);
+}
+
 export async function isNetCoreProject(project: protocol.MSBuildProject) {
     return project.TargetFrameworks.find(tf => tf.ShortName.startsWith('netcoreapp') || tf.ShortName.startsWith('netstandard')) !== undefined;
+}
+
+export async function getInlayHints(server: OmniSharpServer, request: protocol.InlayHintRequest, context: vscode.CancellationToken) {
+    return server.makeRequest<protocol.InlayHintResponse>(protocol.Requests.InlayHint, request, context);
+}
+
+export async function resolveInlayHints(server: OmniSharpServer, request: protocol.InlayHintResolve, context: vscode.CancellationToken) {
+    return server.makeRequest<protocol.InlayHint>(protocol.Requests.InlayHintResolve, request, context);
 }
 
 function isBlazorWebAssemblyHosted(project: protocol.MSBuildProject, isProjectBlazorWebAssemblyProject: boolean): boolean {

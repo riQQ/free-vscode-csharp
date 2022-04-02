@@ -44,6 +44,8 @@ import SemanticTokensProvider from '../features/semanticTokensProvider';
 import SourceGeneratedDocumentProvider from '../features/sourceGeneratedDocumentProvider';
 import { getDecompilationAuthorization } from './decompilationPrompt';
 import { OmniSharpDotnetResolver } from './OmniSharpDotnetResolver';
+import CSharpInlayHintProvider from '../features/inlayHintProvider';
+import fileOpenClose from '../features/fileOpenCloseProvider';
 
 export interface ActivationResult {
     readonly server: OmniSharpServer;
@@ -82,6 +84,8 @@ export async function activate(context: vscode.ExtensionContext, packageJSON: an
         const definitionProvider = new DefinitionProvider(server, definitionMetadataDocumentProvider, sourceGeneratedDocumentProvider, languageMiddlewareFeature);
         localDisposables.add(vscode.languages.registerDefinitionProvider(documentSelector, definitionProvider));
         localDisposables.add(vscode.languages.registerDefinitionProvider({ scheme: definitionMetadataDocumentProvider.scheme }, definitionProvider));
+        localDisposables.add(vscode.languages.registerTypeDefinitionProvider(documentSelector, definitionProvider));
+        localDisposables.add(vscode.languages.registerTypeDefinitionProvider({ scheme: definitionMetadataDocumentProvider.scheme }, definitionProvider));
         localDisposables.add(vscode.languages.registerImplementationProvider(documentSelector, new ImplementationProvider(server, languageMiddlewareFeature)));
         localDisposables.add(vscode.languages.registerCodeLensProvider(documentSelector, new CodeLensProvider(server, testManager, optionProvider, languageMiddlewareFeature)));
         localDisposables.add(vscode.languages.registerDocumentHighlightProvider(documentSelector, new DocumentHighlightProvider(server, languageMiddlewareFeature)));
@@ -111,10 +115,14 @@ export async function activate(context: vscode.ExtensionContext, packageJSON: an
         localDisposables.add(forwardChanges(server));
         localDisposables.add(trackVirtualDocuments(server, eventStream));
         localDisposables.add(vscode.languages.registerFoldingRangeProvider(documentSelector, new StructureProvider(server, languageMiddlewareFeature)));
+        localDisposables.add(fileOpenClose(server));
 
         const semanticTokensProvider = new SemanticTokensProvider(server, optionProvider, languageMiddlewareFeature);
         localDisposables.add(vscode.languages.registerDocumentSemanticTokensProvider(documentSelector, semanticTokensProvider, semanticTokensProvider.getLegend()));
         localDisposables.add(vscode.languages.registerDocumentRangeSemanticTokensProvider(documentSelector, semanticTokensProvider, semanticTokensProvider.getLegend()));
+
+        const inlayHintsProvider = new CSharpInlayHintProvider(server, languageMiddlewareFeature);
+        localDisposables.add(vscode.languages.registerInlayHintsProvider(documentSelector, inlayHintsProvider));
     }));
 
     disposables.add(server.onServerStop(() => {

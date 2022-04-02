@@ -350,10 +350,10 @@ async function launchDotnet(launchInfo: LaunchInfo, cwd: string, args: string[],
     }
     else {
         command = platformInfo.isWindows() ? 'dotnet.exe' : 'dotnet';
-        argsCopy.unshift(launchInfo.DotnetLaunchPath ?? launchInfo.LaunchPath);
+        argsCopy.unshift(`"${launchInfo.DotnetLaunchPath ?? launchInfo.LaunchPath}"`);
     }
 
-    const process = spawn(command, argsCopy, { detached: false, cwd, env: dotnetInfo.env });
+    const process = spawn(command, argsCopy, { detached: false, cwd, env: dotnetInfo.env, shell: true });
 
     return {
         process,
@@ -373,7 +373,7 @@ function launchWindows(launchPath: string, cwd: string, args: string[]): LaunchR
     }
 
     let argsCopy = args.slice(0); // create copy of args
-    argsCopy.unshift(launchPath);
+    argsCopy.unshift(`"${launchPath}"`);
     argsCopy = [[
         '/s',
         '/c',

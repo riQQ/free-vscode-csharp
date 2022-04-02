@@ -34,7 +34,20 @@ export class Options {
         public enableDecompilationSupport: boolean,
         public enableImportCompletion: boolean,
         public enableAsyncCompletion: boolean,
+        public analyzeOpenDocumentsOnly: boolean,
         public useSemanticHighlighting: boolean,
+        public inlayHintsEnableForParameters: boolean,
+        public inlayHintsForLiteralParameters: boolean,
+        public inlayHintsForObjectCreationParameters: boolean,
+        public inlayHintsForIndexerParameters: boolean,
+        public inlayHintsForOtherParameters: boolean,
+        public inlayHintsSuppressForParametersThatDifferOnlyBySuffix: boolean,
+        public inlayHintsSuppressForParametersThatMatchMethodIntent: boolean,
+        public inlayHintsSuppressForParametersThatMatchArgumentName: boolean,
+        public inlayHintsEnableForTypes: boolean,
+        public inlayHintsForImplicitVariableTypes: boolean,
+        public inlayHintsForLambdaParameterTypes: boolean,
+        public inlayHintsForImplicitObjectCreation: boolean,
         public razorPluginPath?: string,
         public defaultLaunchSolution?: string,
         public monoPath?: string,
@@ -82,6 +95,7 @@ export class Options {
         const enableDecompilationSupport = omnisharpConfig.get<boolean>('enableDecompilationSupport', false);
         const enableImportCompletion = omnisharpConfig.get<boolean>('enableImportCompletion', false);
         const enableAsyncCompletion = omnisharpConfig.get<boolean>('enableAsyncCompletion', false);
+        const analyzeOpenDocumentsOnly = omnisharpConfig.get<boolean>('analyzeOpenDocumentsOnly', false);
 
         const useFormatting = csharpConfig.get<boolean>('format.enable', true);
         const organizeImportsOnFormat = omnisharpConfig.get<boolean>('organizeImportsOnFormat', false);
@@ -91,6 +105,19 @@ export class Options {
         const filteredSymbolsCodeLens = csharpConfig.get<string[]>('referencesCodeLens.filteredSymbols', []);
 
         const useSemanticHighlighting = csharpConfig.get<boolean>('semanticHighlighting.enabled', false);
+
+        const inlayHintsEnableForParameters = csharpConfig.get<boolean>('inlayHints.parameters.enabled', false);
+        const inlayHintsForLiteralParameters = csharpConfig.get<boolean>('inlayHints.parameters.forLiteralParameters', false);
+        const inlayHintsForObjectCreationParameters = csharpConfig.get<boolean>('inlayHints.parameters.forObjectCreationParameters', false);
+        const inlayHintsForIndexerParameters = csharpConfig.get<boolean>('inlayHints.parameters.forIndexerParameters', false);
+        const inlayHintsForOtherParameters = csharpConfig.get<boolean>('inlayHints.parameters.forOtherParameters', false);
+        const inlayHintsSuppressForParametersThatDifferOnlyBySuffix = csharpConfig.get<boolean>('inlayHints.parameters.suppressForParametersThatDifferOnlyBySuffix', false);
+        const inlayHintsSuppressForParametersThatMatchMethodIntent = csharpConfig.get<boolean>('inlayHints.parameters.suppressForParametersThatMatchMethodIntent', false);
+        const inlayHintsSuppressForParametersThatMatchArgumentName = csharpConfig.get<boolean>('inlayHints.parameters.suppressForParametersThatMatchArgumentName', false);
+        const inlayHintsEnableForTypes = csharpConfig.get<boolean>('inlayHints.types.enabled', false);
+        const inlayHintsForImplicitVariableTypes = csharpConfig.get<boolean>('inlayHints.types.forImplicitVariableTypes', false);
+        const inlayHintsForLambdaParameterTypes = csharpConfig.get<boolean>('inlayHints.types.forLambdaParameterTypes', false);
+        const inlayHintsForImplicitObjectCreation = csharpConfig.get<boolean>('inlayHints.types.forImplicitObjectCreation', false);
 
         const disableCodeActions = csharpConfig.get<boolean>('disableCodeActions', false);
 
@@ -141,7 +168,20 @@ export class Options {
             enableDecompilationSupport,
             enableImportCompletion,
             enableAsyncCompletion,
+            analyzeOpenDocumentsOnly,
             useSemanticHighlighting,
+            inlayHintsEnableForParameters,
+            inlayHintsForLiteralParameters,
+            inlayHintsForObjectCreationParameters,
+            inlayHintsForIndexerParameters,
+            inlayHintsForOtherParameters,
+            inlayHintsSuppressForParametersThatDifferOnlyBySuffix,
+            inlayHintsSuppressForParametersThatMatchMethodIntent,
+            inlayHintsSuppressForParametersThatMatchArgumentName,
+            inlayHintsEnableForTypes,
+            inlayHintsForImplicitVariableTypes,
+            inlayHintsForLambdaParameterTypes,
+            inlayHintsForImplicitObjectCreation,
             razorPluginPath,
             defaultLaunchSolution,
             monoPath,
