@@ -67,21 +67,30 @@ export async function downloadAndInstallPackages(packages: AbsolutePathPackage[]
                     eventStream.post(new InstallationFailure(installationStage, packageError));
                 }
                 else {
-                    eventStream.post(new InstallationFailure(installationStage, error));
+                    eventStream.post(new IntegrityCheckFailure(pkg.description, pkg.url, willTryInstallingPackage()));
                 }
-
-                return false;
-            }
-            finally {
-                try {
-                    if (await installFileExists(pkg.installPath, InstallFileType.Begin)) {
-                        await deleteInstallFile(pkg.installPath, InstallFileType.Begin);
-                    }
-                }
-                catch (error) { }
             }
         }
+        catch (error) {
+            if (error instanceof NestedError) {
+                let packageError = new PackageError(error.message, pkg, error.err);
+                eventStream.post(new InstallationFailure(installationStage, packageError));
+            }
+            else {
+                eventStream.post(new InstallationFailure(installationStage, error));
+            }
 
-        return true; //if all packages succeded in installing return true
+            return false;
+        }
+        finally {
+            try {
+                if (await installFileExists(pkg.installPath, InstallFileType.Begin)) {
+                    await deleteInstallFile(pkg.installPath, InstallFileType.Begin);
+                }
+            }
+            catch (error) { }
+        }
     }
+
+    return true;
 }

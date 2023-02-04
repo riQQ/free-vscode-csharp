@@ -48,7 +48,7 @@ export async function getFixAll(server: OmniSharpServer, request: protocol.GetFi
 }
 
 export async function findUsages(server: OmniSharpServer, request: protocol.FindUsagesRequest, token: vscode.CancellationToken) {
-    return server.makeRequest<protocol.QuickFixResponse>(protocol.Requests.FindUsages, request, token);
+    return server.makeRequest<protocol.FindSymbolsResponse>(protocol.Requests.FindUsages, request, token);
 }
 
 export async function formatAfterKeystroke(server: OmniSharpServer, request: protocol.FormatAfterKeystrokeRequest, token: vscode.CancellationToken) {
@@ -137,8 +137,8 @@ export async function getMetadata(server: OmniSharpServer, request: protocol.Met
     return server.makeRequest<protocol.MetadataResponse>(protocol.Requests.Metadata, request);
 }
 
-export async function reAnalyze(server: OmniSharpServer, request: any) {
-    return server.makeRequest<any>(protocol.Requests.ReAnalyze, request);
+export async function reAnalyze(server: OmniSharpServer, request: protocol.ReAnalyzeRequest) {
+    return server.makeRequest<protocol.ReAnalyzeReponse>(protocol.Requests.ReAnalyze, request);
 }
 
 export async function getTestStartInfo(server: OmniSharpServer, request: protocol.V2.GetTestStartInfoRequest) {

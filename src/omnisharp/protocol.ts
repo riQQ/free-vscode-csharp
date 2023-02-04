@@ -71,7 +71,7 @@ export namespace WireProtocol {
 }
 
 export interface FileBasedRequest {
-    FileName: string;
+    FileName?: string;
 }
 
 export interface Request extends FileBasedRequest {
@@ -215,6 +215,8 @@ export interface QuickFix {
 
 export interface SymbolLocation extends QuickFix {
     Kind: string;
+    ContainingSymbolName?: string;
+    GeneratedFileInfo?: SourceGeneratedFileInfo;
 }
 
 export interface QuickFixResponse {
@@ -283,15 +285,17 @@ export interface ProjectInformationResponse {
     MsBuildProject: MSBuildProject;
 }
 
-export enum DiagnosticStatus {
-    Processing = 0,
-    Ready = 1
+export enum BackgroundDiagnosticStatus {
+    Started = 0,
+    Progress = 1,
+    Finished = 2
 }
 
-export interface ProjectDiagnosticStatus {
-    Status: DiagnosticStatus;
-    ProjectFilePath: string;
-    Type: "background";
+export interface BackgroundDiagnosticStatusMessage {
+    Status: BackgroundDiagnosticStatus;
+    NumberProjects: number;
+    NumberFilesTotal: number;
+    NumberFilesRemaining: number;
 }
 
 export interface WorkspaceInformationResponse {
@@ -320,12 +324,15 @@ export interface CakeContext {
 
 export interface MSBuildProject {
     ProjectGuid: string;
+    /** Absolute path to the csproj file. */
     Path: string;
     AssemblyName: string;
+    /** Absolute path to the output assembly DLL. */
     TargetPath: string;
     TargetFramework: string;
     SourceFiles: string[];
     TargetFrameworks: TargetFramework[];
+    /** Absolute path to the output directory. */
     OutputPath: string;
     IsExe: boolean;
     IsUnityProject: boolean;
@@ -500,6 +507,12 @@ export interface RunFixAllRequest extends FileBasedRequest {
     ApplyChanges: boolean;
 }
 
+export interface ReAnalyzeRequest extends FileBasedRequest {
+}
+
+export interface ReAnalyzeReponse {
+}
+
 export interface QuickInfoRequest extends Request {
 }
 
@@ -569,10 +582,16 @@ export interface SourceGeneratedFileResponse {
 export interface UpdateSourceGeneratedFileRequest extends SourceGeneratedFileInfo {
 }
 
-export interface UpdateSourceGeneratedFileResponse {
-    UpdateType: UpdateType;
-    Source?: string;
+interface UpdateSourceGeneratedFileNotModifiedResponse {
+    UpdateType: Exclude<UpdateType, UpdateType.Modified>;
 }
+
+interface UpdateSourceGeneratedFileModifiedResponse {
+    UpdateType: UpdateType.Modified;
+    Source: string;
+}
+
+export type UpdateSourceGeneratedFileResponse = UpdateSourceGeneratedFileNotModifiedResponse | UpdateSourceGeneratedFileModifiedResponse;
 
 export enum UpdateType {
     Unchanged,
@@ -679,6 +698,7 @@ export namespace V2 {
     export interface OmniSharpCodeAction {
         Identifier: string;
         Name: string;
+        CodeActionKind?: string;
     }
 
     export interface GetCodeActionsResponse {
@@ -737,9 +757,9 @@ export namespace V2 {
 
     // dotnet-test endpoints
     interface BaseTestRequest extends Request {
-        RunSettings: string;
+        RunSettings?: string;
         TestFrameworkName: string;
-        TargetFrameworkVersion: string;
+        TargetFrameworkVersion?: string;
         NoBuild?: boolean;
     }
 
