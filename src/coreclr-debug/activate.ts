@@ -12,7 +12,6 @@ import { DebuggerPrerequisiteWarning, DebuggerPrerequisiteFailure, DebuggerNotIn
 import { EventStream } from '../EventStream';
 import CSharpExtensionExports from '../CSharpExtensionExports';
 import { getRuntimeDependencyPackageWithId } from '../tools/RuntimeDependencyPackageUtils';
-import { DotnetInfo } from '../utils/getDotnetInfo';
 import { DotnetDebugConfigurationProvider } from './debugConfigurationProvider';
 import { Options } from '../omnisharp/options';
 

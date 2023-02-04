@@ -32,7 +32,6 @@ import DotNetTestChannelObserver from './observers/DotnetTestChannelObserver';
 import DotNetTestLoggerObserver from './observers/DotnetTestLoggerObserver';
 import { ShowOmniSharpConfigChangePrompt } from './observers/OptionChangeObserver';
 import createOptionStream from './observables/CreateOptionStream';
-import { CSharpExtensionId } from './constants/CSharpExtensionId';
 import { OpenURLObserver } from './observers/OpenURLObserver';
 import { activateRazorExtension } from './razor/razor';
 import { RazorLoggerObserver } from './observers/RazorLoggerObserver';
@@ -45,9 +44,6 @@ import { BackgroundWorkStatusBarObserver } from './observers/BackgroundWorkStatu
 import { getDotnetPackApi } from './DotnetPack';
 
 export async function activate(context: vscode.ExtensionContext): Promise<CSharpExtensionExports | null> {
-
-    const extensionId = CSharpExtensionId;
-    const extension = vscode.extensions.getExtension<CSharpExtensionExports>(extensionId);
 
     util.setExtensionPath(context.extension.extensionPath);
 
