@@ -483,7 +483,7 @@
     {
       "id": "Debugger",
       "description": ".NET Core Debugger (linux / x64)",
-      "url": "https://vsdebugger.azureedge.net/coreclr-debug-1-24-5/coreclr-debug-linux-x64.zip",
+      "url": "https://github.com/Samsung/netcoredbg/releases/download/2.2.0-961/netcoredbg-linux-amd64.tar.gz",
       "installPath": ".debugger",
       "platforms": [
         "linux",
