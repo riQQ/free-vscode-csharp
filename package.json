@@ -421,20 +421,6 @@
       "fallbackUrl": "https://web.archive.org/web/20201114153845if_/https://github-production-release-asset-2e65be.s3.amazonaws.com/113926796/e77a8500-1552-11eb-8b31-fe0e14726f36?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20201114%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20201114T153659Z&X-Amz-Expires=300&X-Amz-Signature=5782fc0120f26ad4ec919f9cc21b70c42986436a05de7f857fff3e7604e077fb&X-Amz-SignedHeaders=host&actor_id=0&key_id=0&repo_id=113926796&response-content-disposition=attachment%3B%20filename%3Dnetcoredbg-osx.tar.gz&response-content-type=application%2Foctet-stream",
       "installPath": ".debugger",
       "platforms": [
-        "win32"
-      ],
-      "architectures": [
-        "arm64"
-      ],
-      "installTestPath": "./.debugger/vsdbg-ui.exe",
-      "integrity": "669BFDBBEBF4C9589BDD44C7E1A1055F7D7705BB315E7CA8809398FD784A4371"
-    },
-    {
-      "id": "Debugger",
-      "description": ".NET Core Debugger (macOS / x64)",
-      "url": "https://vsdebugger.azureedge.net/coreclr-debug-1-24-5/coreclr-debug-osx-x64.zip",
-      "installPath": ".debugger/x86_64",
-      "platforms": [
         "darwin"
       ],
       "architectures": [
@@ -479,25 +465,6 @@
         "./netcoredbg"
       ],
       "installTestPath": ".debugger/netcoredbg/netcoredbg"
-    },
-    {
-      "id": "Debugger",
-      "description": ".NET Core Debugger (linux / x64)",
-      "url": "https://github.com/Samsung/netcoredbg/releases/download/2.2.0-961/netcoredbg-linux-amd64.tar.gz",
-      "installPath": ".debugger",
-      "platforms": [
-        "linux",
-        "linux-musl"
-      ],
-      "architectures": [
-        "x86_64"
-      ],
-      "binaries": [
-        "./vsdbg-ui",
-        "./vsdbg"
-      ],
-      "installTestPath": "./.debugger/vsdbg-ui",
-      "integrity": "4A116A96B99009DD59081CB0BD981E33C8FCA4C96F0CF2953B23591C692C7C26"
     },
     {
       "id": "Razor",
