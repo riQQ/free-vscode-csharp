@@ -22,11 +22,10 @@ export async function InstallTarGz(buffer: Buffer, description: string, destinat
             })
         )
         .on('error', err => {
-            let message = "C# Extension was unable to install its dependencies. Please check your internet connection. If you use a proxy server, please visit https://aka.ms/VsCodeCsharpNetworking";
+            let message = "Error extracting file. " + err.message;
             eventStream.post(new ZipError(message));
             return reject(new NestedError(message));
         })
         .on('end', () => resolve());
     });
 }
-
