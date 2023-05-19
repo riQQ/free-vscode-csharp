@@ -22,7 +22,7 @@ export async function InstallTarGz(buffer: Buffer, description: string, destinat
             })
         )
         .on('error', err => {
-            let message = "Error extracting file. " + err.message;
+            let message = "Error extracting tar file. " + err.message;
             eventStream.post(new ZipError(message));
             return reject(new NestedError(message));
         })
