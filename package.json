@@ -75,7 +75,7 @@
     "stream": "0.0.2",
     "strip-bom": "5.0.0",
     "strip-bom-buf": "2.0.0",
-    "tar": "6.0.5",
+    "tar": "^6.1.15",
     "tmp": "0.0.33",
     "vscode-languageserver-protocol": "3.17.1",
     "vscode-nls": "5.0.1",
