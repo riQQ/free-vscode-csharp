@@ -11,7 +11,7 @@ import { IHostExecutableResolver } from "../constants/IHostExecutableResolver";
 import { IGetDotnetInfo } from "../constants/IGetDotnetInfo";
 import { dirname } from "path";
 
-const issuesUrl = "https://github.com/OmniSharp/omnisharp-vscode/issues/new";
+const issuesUrl = "https://github.com/muhammadsammy/free-omnisharp-vscode/issues/new";
 
 export default async function reportIssue(vscode: vscode, csharpExtVersion: string, eventStream: EventStream, getDotnetInfo: IGetDotnetInfo, isValidPlatformForMono: boolean, options: Options, dotnetResolver: IHostExecutableResolver, monoResolver: IHostExecutableResolver) {
     // Get info for the dotnet that the Omnisharp executable is run on, not the dotnet Omnisharp will execute user code on.
@@ -43,6 +43,8 @@ export default async function reportIssue(vscode: vscode, csharpExtVersion: stri
 <details>Post the output from Output-->C# here</details>
 
 ## Environment information ##
+
+⚠️⚠️ This report was from [this extension](https://github.com/muhammadsammy/free-omnisharp-vscode) which is a **fork** of the official extension
 
 **VSCode version**: ${vscode.version}
 **C# Extension**: ${csharpExtVersion}

@@ -6,13 +6,12 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as common from './../common';
-import { CoreClrDebugUtil, getTargetArchitecture } from './util';
+import { CoreClrDebugUtil } from './util';
 import { PlatformInformation } from './../platform';
 import { DebuggerPrerequisiteWarning, DebuggerPrerequisiteFailure, DebuggerNotInstalledFailure } from '../omnisharp/loggingEvents';
 import { EventStream } from '../EventStream';
 import CSharpExtensionExports from '../CSharpExtensionExports';
 import { getRuntimeDependencyPackageWithId } from '../tools/RuntimeDependencyPackageUtils';
-import { getDotnetInfo } from '../utils/getDotnetInfo';
 import { DotnetDebugConfigurationProvider } from './debugConfigurationProvider';
 import { Options } from '../omnisharp/options';
 
@@ -167,16 +166,13 @@ export class DebugAdapterExecutableFactory implements vscode.DebugAdapterDescrip
 
         // debugger has finished installation, kick off our debugger process
 
+        // Check for targetArchitecture
+        // const targetArchitecture: string = getTargetArchitecture(this.platformInfo, _session.configuration.targetArchitecture, await getDotnetInfo());
+
         // use the executable specified in the package.json if it exists or determine it based on some other information (e.g. the session)
         if (!executable) {
-            const dotNetInfo = await getDotnetInfo(this.options.dotNetCliPaths);
-            const targetArchitecture = getTargetArchitecture(this.platformInfo, _session.configuration.targetArchitecture, dotNetInfo);
-            const command = path.join(common.getExtensionPath(), ".debugger", targetArchitecture, "vsdbg-ui" + CoreClrDebugUtil.getPlatformExeExtension());
-            executable = new vscode.DebugAdapterExecutable(command, [], {
-                env: {
-                    DOTNET_ROOT: dotNetInfo.CliPath ? path.dirname(dotNetInfo.CliPath) : '',
-                }
-            });
+            const command = path.join(common.getExtensionPath(), ".debugger", "netcoredbg", "netcoredbg" + CoreClrDebugUtil.getPlatformExeExtension());
+            executable = new vscode.DebugAdapterExecutable(command, ["--interpreter=vscode"]);
         }
 
         // make VS Code launch the DA executable

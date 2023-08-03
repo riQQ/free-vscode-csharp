@@ -74,7 +74,7 @@ suite(`${reportIssue.name}`, () => {
     test(`${OpenURL.name} event is created with the omnisharp-vscode github repo issues url`, async () => {
         await reportIssue(vscode, csharpExtVersion, eventStream, getDotnetInfo, false, options, fakeDotnetResolver, fakeMonoResolver);
         let url = (<OpenURL>eventBus.getEvents()[0]).url;
-        expect(url).to.include("https://github.com/OmniSharp/omnisharp-vscode/issues/new?body=Please paste the output from your clipboard");
+        expect(url).to.include("https://github.com/muhammadsammy/free-omnisharp-vscode/issues/new?body=Please paste the output from your clipboard");
     });
 
     suite("The body is passed to the vscode clipboard and", () => {

@@ -16,9 +16,9 @@ export interface ActivationResult {
 }
 
 export async function activateCSharpExtension(): Promise<ActivationResult> {
-    const csharpExtension = vscode.extensions.getExtension<CSharpExtensionExports>("ms-dotnettools.csharp");
+    const csharpExtension = vscode.extensions.getExtension<CSharpExtensionExports>("muhammad-sammy.csharp");
     if (!csharpExtension) {
-        throw new Error("Failed to find installation of ms-dotnettools.csharp");
+        throw new Error("Failed to find installation of muhammad-sammy.csharp");
     }
 
     if (!csharpExtension.isActive) {
@@ -29,7 +29,7 @@ export async function activateCSharpExtension(): Promise<ActivationResult> {
         await csharpExtension.exports.initializationFinished();
         const advisor = await csharpExtension.exports.getAdvisor();
         const eventStream = csharpExtension.exports.eventStream;
-        console.log("ms-dotnettools.csharp activated");
+        console.log("muhammad-sammy.csharp activated");
         return {
             advisor: advisor,
             eventStream: eventStream
@@ -42,7 +42,7 @@ export async function activateCSharpExtension(): Promise<ActivationResult> {
 }
 
 export async function restartOmniSharpServer(): Promise<void> {
-    const csharpExtension = vscode.extensions.getExtension<CSharpExtensionExports>("ms-dotnettools.csharp");
+    const csharpExtension = vscode.extensions.getExtension<CSharpExtensionExports>("muhammad-sammy.csharp");
     if (!csharpExtension) {
         throw new Error("Failed to find installation of ms-dotnettools.csharp");
     }

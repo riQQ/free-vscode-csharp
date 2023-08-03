@@ -22,8 +22,6 @@ import { OmnisharpLoggerObserver } from './observers/OmnisharpLoggerObserver';
 import { OmnisharpStatusBarObserver } from './observers/OmnisharpStatusBarObserver';
 import { PlatformInformation } from './platform';
 import { StatusBarItemAdapter } from './statusBarItemAdapter';
-import { TelemetryObserver } from './observers/TelemetryObserver';
-import TelemetryReporter from '@vscode/extension-telemetry';
 import { addJSONProviders } from './features/json/jsonContributions';
 import { ProjectStatusBarObserver } from './observers/ProjectStatusBarObserver';
 import CSharpExtensionExports from './CSharpExtensionExports';
@@ -34,7 +32,6 @@ import DotNetTestChannelObserver from './observers/DotnetTestChannelObserver';
 import DotNetTestLoggerObserver from './observers/DotnetTestLoggerObserver';
 import { ShowOmniSharpConfigChangePrompt } from './observers/OptionChangeObserver';
 import createOptionStream from './observables/CreateOptionStream';
-import { CSharpExtensionId } from './constants/CSharpExtensionId';
 import { OpenURLObserver } from './observers/OpenURLObserver';
 import { activateRazorExtension } from './razor/razor';
 import { RazorLoggerObserver } from './observers/RazorLoggerObserver';
@@ -47,10 +44,6 @@ import { BackgroundWorkStatusBarObserver } from './observers/BackgroundWorkStatu
 import { getDotnetPackApi } from './DotnetPack';
 
 export async function activate(context: vscode.ExtensionContext): Promise<CSharpExtensionExports | null> {
-
-    const extensionVersion = context.extension.packageJSON.version;
-    const aiKey = context.extension.packageJSON.contributes.debuggers[0].aiKey;
-    const reporter = new TelemetryReporter(CSharpExtensionId, extensionVersion, aiKey);
 
     util.setExtensionPath(context.extension.extensionPath);
 
@@ -151,8 +144,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<CSharp
     await initializeDotnetPath();
 
     let useModernNetOption = optionProvider.GetLatestOptions().useModernNet;
-    let telemetryObserver = new TelemetryObserver(platformInfo, () => reporter, useModernNetOption);
-    eventStream.subscribe(telemetryObserver.post);
 
     let networkSettingsProvider = vscodeNetworkSettingsProvider(vscode);
     const useFramework = useModernNetOption !== true;
