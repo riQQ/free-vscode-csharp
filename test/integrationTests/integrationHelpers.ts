@@ -44,7 +44,7 @@ export async function activateCSharpExtension(): Promise<ActivationResult> {
 export async function restartOmniSharpServer(): Promise<void> {
     const csharpExtension = vscode.extensions.getExtension<CSharpExtensionExports>("muhammad-sammy.csharp");
     if (!csharpExtension) {
-        throw new Error("Failed to find installation of ms-dotnettools.csharp");
+        throw new Error("Failed to find installation of muhammad-sammy.csharp");
     }
 
     if (!csharpExtension.isActive) {

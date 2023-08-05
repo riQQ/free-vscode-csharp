@@ -21,7 +21,7 @@ cd free-omnisharp-vscode
 
 npm install
 
-npx gulp 'vsix:release:package'
+npx gulp 'vsix:offline:package'
 
 ```
 
