@@ -36,7 +36,7 @@
   },
   "defaults": {
     "omniSharp": "1.39.7",
-    "razor": "7.0.0-preview.23258.1"
+    "razor": "7.0.0-preview.23328.2"
   },
   "main": "./dist/extension",
   "scripts": {
@@ -59,71 +59,71 @@
   },
   "dependencies": {
     "@types/cross-spawn": "6.0.2",
-    "@vscode/debugprotocol": "1.56.0",
-    "@vscode/extension-telemetry": "0.6.2",
+    "@vscode/debugprotocol": "1.61.0",
+    "@vscode/extension-telemetry": "0.8.2",
     "async-file": "2.0.2",
-    "cross-spawn": "6.0.5",
-    "fs-extra": "9.1.0",
-    "http-proxy-agent": "4.0.1",
-    "https-proxy-agent": "5.0.0",
-    "jsonc-parser": "3.0.0",
-    "microsoft.aspnetcore.razor.vscode": "https://download.visualstudio.microsoft.com/download/pr/4ccf25e1-f154-4946-b682-0cdfd35a60ce/4602907d6f698a6bf4b70562105a1a71/microsoft.aspnetcore.razor.vscode-7.0.0-preview.23258.1.tgz",
+    "cross-spawn": "7.0.3",
+    "fs-extra": "11.1.1",
+    "http-proxy-agent": "5.0.0",
+    "https-proxy-agent": "5.0.1",
+    "jsonc-parser": "3.2.0",
+    "microsoft.aspnetcore.razor.vscode": "https://download.visualstudio.microsoft.com/download/pr/aee63398-023f-48db-bba2-30162c68f0c4/0af42abab690d5de903a4a814d6aedc1/microsoft.aspnetcore.razor.vscode-7.0.0-preview.23363.1.tgz",
     "node-machine-id": "1.1.12",
-    "request-light": "0.4.0",
+    "request-light": "0.7.0",
     "rxjs": "6.6.7",
-    "semver": "5.6.0",
+    "semver": "7.5.4",
     "stream": "0.0.2",
     "strip-bom": "5.0.0",
     "strip-bom-buf": "2.0.0",
     "tar": "^6.1.15",
     "tmp": "0.0.33",
-    "vscode-languageserver-protocol": "3.17.1",
-    "vscode-nls": "5.0.1",
+    "vscode-languageserver-protocol": "3.17.3",
+    "vscode-nls": "5.2.0",
     "yauzl": "2.10.0"
   },
   "devDependencies": {
-    "@types/archiver": "5.1.0",
-    "@types/chai": "4.2.16",
+    "@types/archiver": "5.3.2",
+    "@types/chai": "4.3.5",
     "@types/chai-arrays": "2.0.0",
-    "@types/chai-as-promised": "7.1.3",
+    "@types/chai-as-promised": "7.1.5",
     "@types/chai-string": "1.4.2",
     "@types/del": "3.0.1",
-    "@types/fs-extra": "5.0.4",
-    "@types/gulp": "4.0.5",
-    "@types/minimist": "1.2.1",
+    "@types/fs-extra": "11.0.1",
+    "@types/gulp": "4.0.13",
+    "@types/minimist": "1.2.2",
     "@types/mocha": "5.2.5",
-    "@types/node": "16.11.38",
-    "@types/semver": "5.5.0",
+    "@types/node": "20.4.6",
+    "@types/semver": "7.5.0",
     "@types/tar": "6.1.5",
     "@types/tmp": "0.0.33",
-    "@types/unzipper": "^0.9.1",
-    "@types/vscode": "1.66.0",
+    "@types/unzipper": "^0.10.6",
+    "@types/vscode": "1.69.0",
     "@types/yauzl": "2.10.0",
-    "@vscode/test-electron": "2.1.3",
-    "archiver": "5.3.0",
-    "chai": "4.3.4",
+    "@vscode/test-electron": "2.3.4",
+    "archiver": "5.3.1",
+    "chai": "4.3.7",
     "chai-arrays": "2.2.0",
     "chai-as-promised": "7.1.1",
     "chai-fs": "2.0.0",
     "chai-string": "1.5.0",
     "del": "3.0.0",
-    "find-versions": "4.0.0",
+    "find-versions": "5.1.0",
     "get-port": "5.1.1",
-    "glob-promise": "4.1.0",
-    "gulp": "4.0.2",
+    "glob-promise": "6.0.3",
+    "gulp": "^4.0.2",
     "mocha": "10.0.0",
-    "mock-fs": "4.13.0",
-    "mock-http-server": "1.4.2",
-    "ts-loader": "9.0.0",
-    "ts-node": "9.1.1",
-    "tslint": "5.12.1",
+    "mock-fs": "5.2.0",
+    "mock-http-server": "1.4.5",
+    "ts-loader": "9.4.4",
+    "ts-node": "10.9.1",
+    "tslint": "5.20.1",
     "tslint-microsoft-contrib": "6.0.0",
     "tslint-no-unused-expression-chai": "0.1.4",
-    "typescript": "4.6.3",
-    "unzipper": "0.10.11",
-    "vsce": "2.9.2",
-    "webpack": "5.34.0",
-    "webpack-cli": "4.6.0"
+    "typescript": "5.1.6",
+    "unzipper": "0.10.14",
+    "vsce": "^2.15.0",
+    "webpack": "5.88.2",
+    "webpack-cli": "5.1.4"
   },
   "runtimeDependencies": [
     {
@@ -403,7 +403,7 @@
     {
       "id": "Debugger",
       "description": ".NET Core Debugger (Windows / x64)",
-      "url": "https://github.com/Samsung/netcoredbg/releases/download/2.2.0-974/netcoredbg-win64.zip",
+      "url": "https://github.com/Samsung/netcoredbg/releases/download/2.2.3-992/netcoredbg-win64.zip",
       "installPath": ".debugger",
       "platforms": [
         "win32"
@@ -416,7 +416,7 @@
     {
       "id": "Debugger",
       "description": ".NET Core Debugger (macOS / x64)",
-      "url": "https://github.com/Samsung/netcoredbg/releases/download/2.2.0-974/netcoredbg-osx-amd64.tar.gz",
+      "url": "https://github.com/Samsung/netcoredbg/releases/download/2.2.3-992/netcoredbg-osx-amd64.tar.gz",
       "installPath": ".debugger",
       "platforms": [
         "darwin"
@@ -433,7 +433,7 @@
     {
       "id": "Debugger",
       "description": ".NET Core Debugger (linux / x64)",
-      "url": "https://github.com/Samsung/netcoredbg/releases/download/2.2.0-974/netcoredbg-linux-amd64.tar.gz",
+      "url": "https://github.com/Samsung/netcoredbg/releases/download/2.2.3-992/netcoredbg-linux-amd64.tar.gz",
       "installPath": ".debugger",
       "platforms": [
         "linux",
@@ -450,7 +450,7 @@
     {
       "id": "Debugger",
       "description": ".NET Core Debugger (linux / ARM64)",
-      "url": "https://github.com/Samsung/netcoredbg/releases/download/2.2.0-974/netcoredbg-linux-arm64.tar.gz",
+      "url": "https://github.com/Samsung/netcoredbg/releases/download/2.2.3-992/netcoredbg-linux-arm64.tar.gz",
       "installPath": ".debugger",
       "platforms": [
         "linux"
@@ -466,7 +466,7 @@
     {
       "id": "Razor",
       "description": "Razor Language Server (Windows / x64)",
-      "url": "https://download.visualstudio.microsoft.com/download/pr/4ccf25e1-f154-4946-b682-0cdfd35a60ce/d67585e2b3009d700c70f6f3f7ec666f/razorlanguageserver-win-x64-7.0.0-preview.23258.1.zip",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/51d2bf3c-cb3c-4385-b59f-d4d6c9a96743/3b7fc7c2f06e48d78bec2125adcc41aa/razorlanguageserver-win-x64-7.0.0-preview.23328.2.zip",
       "installPath": ".razor",
       "platforms": [
         "win32"
@@ -478,7 +478,7 @@
     {
       "id": "Razor",
       "description": "Razor Language Server (Windows / x86)",
-      "url": "https://download.visualstudio.microsoft.com/download/pr/4ccf25e1-f154-4946-b682-0cdfd35a60ce/dc253426025d44bf9f78e9d69b1b946e/razorlanguageserver-win-x86-7.0.0-preview.23258.1.zip",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/51d2bf3c-cb3c-4385-b59f-d4d6c9a96743/d1b37bd821529147e7ffec08f98be17c/razorlanguageserver-win-x86-7.0.0-preview.23328.2.zip",
       "installPath": ".razor",
       "platforms": [
         "win32"
@@ -490,7 +490,7 @@
     {
       "id": "Razor",
       "description": "Razor Language Server (Windows / ARM64)",
-      "url": "https://download.visualstudio.microsoft.com/download/pr/4ccf25e1-f154-4946-b682-0cdfd35a60ce/c6a4cc07ec8a8e089ce3a8e618e2df35/razorlanguageserver-win-arm64-7.0.0-preview.23258.1.zip",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/51d2bf3c-cb3c-4385-b59f-d4d6c9a96743/b2aa92ccbdf03761b6783bf123bfbe22/razorlanguageserver-win-arm64-7.0.0-preview.23328.2.zip",
       "installPath": ".razor",
       "platforms": [
         "win32"
@@ -502,7 +502,7 @@
     {
       "id": "Razor",
       "description": "Razor Language Server (Linux / x64)",
-      "url": "https://download.visualstudio.microsoft.com/download/pr/4ccf25e1-f154-4946-b682-0cdfd35a60ce/86cc790bb4a8c703cbec0e3260b63620/razorlanguageserver-linux-x64-7.0.0-preview.23258.1.zip",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/51d2bf3c-cb3c-4385-b59f-d4d6c9a96743/68986857aef04be58efab25ffd338a93/razorlanguageserver-linux-x64-7.0.0-preview.23328.2.zip",
       "installPath": ".razor",
       "platforms": [
         "linux"
@@ -517,7 +517,7 @@
     {
       "id": "Razor",
       "description": "Razor Language Server (Linux ARM64)",
-      "url": "https://download.visualstudio.microsoft.com/download/pr/4ccf25e1-f154-4946-b682-0cdfd35a60ce/cbd4a5d06dfd59faf0afca97cb44c2d8/razorlanguageserver-linux-arm64-7.0.0-preview.23258.1.zip",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/51d2bf3c-cb3c-4385-b59f-d4d6c9a96743/c74964f4e130b50f9aef47d430c34a97/razorlanguageserver-linux-arm64-7.0.0-preview.23328.2.zip",
       "installPath": ".razor",
       "platforms": [
         "linux"
@@ -532,7 +532,7 @@
     {
       "id": "Razor",
       "description": "Razor Language Server (Linux musl / x64)",
-      "url": "https://download.visualstudio.microsoft.com/download/pr/4ccf25e1-f154-4946-b682-0cdfd35a60ce/8eb49bd7a28941933356bdb206864b2d/razorlanguageserver-linux-musl-x64-7.0.0-preview.23258.1.zip",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/51d2bf3c-cb3c-4385-b59f-d4d6c9a96743/c204acfa0fd9d0e06fbcc3aac3ba846e/razorlanguageserver-linux-musl-x64-7.0.0-preview.23328.2.zip",
       "installPath": ".razor",
       "platforms": [
         "linux-musl"
@@ -547,7 +547,7 @@
     {
       "id": "Razor",
       "description": "Razor Language Server (Linux musl ARM64)",
-      "url": "https://download.visualstudio.microsoft.com/download/pr/4ccf25e1-f154-4946-b682-0cdfd35a60ce/6ddcb891121eef359196e37ab1f4f31d/razorlanguageserver-linux-musl-arm64-7.0.0-preview.23258.1.zip",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/51d2bf3c-cb3c-4385-b59f-d4d6c9a96743/7ad5dd2c8780d3e4eaaafb5352a21afa/razorlanguageserver-linux-musl-arm64-7.0.0-preview.23328.2.zip",
       "installPath": ".razor",
       "platforms": [
         "linux-musl"
@@ -562,7 +562,7 @@
     {
       "id": "Razor",
       "description": "Razor Language Server (macOS / x64)",
-      "url": "https://download.visualstudio.microsoft.com/download/pr/4ccf25e1-f154-4946-b682-0cdfd35a60ce/cd0a3b009315c636383c21962d312d8a/razorlanguageserver-osx-x64-7.0.0-preview.23258.1.zip",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/51d2bf3c-cb3c-4385-b59f-d4d6c9a96743/d7017a3e07d15f057353ab21b8710714/razorlanguageserver-osx-x64-7.0.0-preview.23328.2.zip",
       "installPath": ".razor",
       "platforms": [
         "darwin"
@@ -577,7 +577,7 @@
     {
       "id": "Razor",
       "description": "Razor Language Server (macOS ARM64)",
-      "url": "https://download.visualstudio.microsoft.com/download/pr/4ccf25e1-f154-4946-b682-0cdfd35a60ce/274355756fd7dd499d0116f063b2cd67/razorlanguageserver-osx-arm64-7.0.0-preview.23258.1.zip",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/51d2bf3c-cb3c-4385-b59f-d4d6c9a96743/a31700a64049f7c770a525662ef74f3c/razorlanguageserver-osx-arm64-7.0.0-preview.23328.2.zip",
       "installPath": ".razor",
       "platforms": [
         "darwin"
@@ -591,7 +591,7 @@
     }
   ],
   "engines": {
-    "vscode": "^1.66.0"
+    "vscode": "^1.69.0"
   },
   "activationEvents": [
     "onDebugInitialConfigurations",
