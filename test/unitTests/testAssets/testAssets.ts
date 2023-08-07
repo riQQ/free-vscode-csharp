@@ -222,7 +222,7 @@ export let testPackageJSON = {
         },
         {
             "description": "Non omnisharp package without platformId",
-            "url": "https://github.com/jamsilva/netcoredbg/releases/download/latest/netcoredbg-win64-master.zip",
+            "url": "https://github.com/Samsung/netcoredbg/releases/download/2.2.0-974/netcoredbg-win64.zip",
             "installPath": ".debugger",
             "platforms": [
                 "win32"

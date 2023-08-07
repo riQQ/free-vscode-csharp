@@ -21,7 +21,7 @@ cd free-omnisharp-vscode
 
 npm install
 
-npx gulp 'vsix:release:package'
+npx gulp 'vsix:offline:package'
 
 ```
 
@@ -59,8 +59,8 @@ To really see the difference, try the new Visual Studio 2019 Light and Dark them
 
 First install:
 
-- Node.js (8.11.1 or later)
-- Npm (5.6.0 or later)
+* Node.js (8.11.1 or later)
+* Npm (5.6.0 or later)
 
 To **run and develop** do the following:
 

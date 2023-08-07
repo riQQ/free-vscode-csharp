@@ -15,8 +15,11 @@ export interface ActivationResult {
     readonly eventStream: EventStream;
 }
 
-export async function activateCSharpExtension(): Promise<ActivationResult | undefined> {
+export async function activateCSharpExtension(): Promise<ActivationResult> {
     const csharpExtension = vscode.extensions.getExtension<CSharpExtensionExports>("muhammad-sammy.csharp");
+    if (!csharpExtension) {
+        throw new Error("Failed to find installation of muhammad-sammy.csharp");
+    }
 
     if (!csharpExtension.isActive) {
         await csharpExtension.activate();
@@ -24,20 +27,25 @@ export async function activateCSharpExtension(): Promise<ActivationResult | unde
 
     try {
         await csharpExtension.exports.initializationFinished();
+        const advisor = await csharpExtension.exports.getAdvisor();
+        const eventStream = csharpExtension.exports.eventStream;
         console.log("muhammad-sammy.csharp activated");
         return {
-            advisor: await csharpExtension.exports.getAdvisor(),
-            eventStream: csharpExtension.exports.eventStream
+            advisor: advisor,
+            eventStream: eventStream
         };
     }
     catch (err) {
         console.log(JSON.stringify(err));
-        return undefined;
+        throw err;
     }
 }
 
 export async function restartOmniSharpServer(): Promise<void> {
     const csharpExtension = vscode.extensions.getExtension<CSharpExtensionExports>("muhammad-sammy.csharp");
+    if (!csharpExtension) {
+        throw new Error("Failed to find installation of muhammad-sammy.csharp");
+    }
 
     if (!csharpExtension.isActive) {
         await activateCSharpExtension();
@@ -57,7 +65,7 @@ export async function restartOmniSharpServer(): Promise<void> {
     }
     catch (err) {
         console.log(JSON.stringify(err));
-        return;
+        throw err;
     }
 }
 
@@ -74,7 +82,7 @@ export function isSlnWithGenerator(workspace: typeof vscode.workspace) {
 }
 
 function isGivenSln(workspace: typeof vscode.workspace, expectedProjectFileName: string) {
-    const primeWorkspace = workspace.workspaceFolders[0];
+    const primeWorkspace = workspace.workspaceFolders![0];
     const projectFileName = primeWorkspace.uri.fsPath.split(path.sep).pop();
 
     return projectFileName === expectedProjectFileName;

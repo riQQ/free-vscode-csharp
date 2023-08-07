@@ -561,7 +561,7 @@ class DebugEventListener {
         }
         else {
             let tmpdir = utils.getUnixTempDirectory();
-            this._pipePath = path.join(tmpdir, "ms-dotnettools.csharp-tde-" + process.pid);
+            this._pipePath = path.join(tmpdir, "muhammad-sammy.csharp-tde-" + process.pid);
         }
     }
 
