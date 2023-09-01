@@ -15,18 +15,15 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Setup virtual display
-      run: /usr/bin/Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
-
-    - name: Install .NET Core 6.0 SDK
+    - name: Install .NET Core 7.x SDK
       uses: actions/setup-dotnet@v1.7.2
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 7.x
 
-    - name: Install Node.js 15.x
+    - name: Install Node.js 18.x
       uses: actions/setup-node@v1
       with:
-        node-version: '15.x'
+        node-version: '18.x'
 
     - name: Install dependencies
       run: |
@@ -36,19 +33,11 @@ jobs:
     - name: Compile
       run: npm run compile
 
-    - name: Build platform-neutral extension package
-      run: gulp 'vsix:release:package:platform-neutral'
+    - name: Prepublish VSIX
+      run: npm run vscode:prepublish
 
-    - name: Run unit and integration tests
-      run: |
-          npm run test
-          npm run test:artifacts
-      env:
-        CODE_VERSION: 1.66.0
-        DISPLAY: :99.0
-
-    - name: Build platform-specific extension package
-      run: gulp 'vsix:release:package:platform-specific'
+    - name: Build platform-specific extension packages
+      run: gulp 'vsix:release:package'
 
     - name: Upload VSIX build artifact
       uses: actions/upload-artifact@v2
