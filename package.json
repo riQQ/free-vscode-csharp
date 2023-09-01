@@ -1,7 +1,7 @@
 {
   "name": "csharp",
   "publisher": "muhammad-sammy",
-  "version": "2.0.0-g66ad0c9670",
+  "version": "v2.0.436",
   "description": "C# support for vscode-compatible editors (powered by OmniSharp and NetCoreDbg).",
   "displayName": "C#",
   "author": "Muhammad Sammy",
