@@ -1,19 +1,20 @@
 {
   "name": "csharp",
   "publisher": "muhammad-sammy",
-  "version": "1.26.0",
+  "version": "2.0.0-g66ad0c9670",
   "description": "C# support for vscode-compatible editors (powered by OmniSharp and NetCoreDbg).",
   "displayName": "C#",
   "author": "Muhammad Sammy",
   "license": "SEE LICENSE IN RuntimeLicenses/license.txt",
+  "qna": "https://github.com/dotnet/vscode-csharp/issues",
   "icon": "images/csharpIcon.png",
   "preview": false,
   "bugs": {
-    "url": "https://github.com/muhammadsammy/free-omnisharp-vscode/issues"
+    "url": "https://github.com/OmniSharp/omnisharp-vscode/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/muhammadsammy/free-omnisharp-vscode.git"
+    "url": "https://github.com/OmniSharp/omnisharp-vscode.git"
   },
   "categories": [
     "Debuggers",
@@ -26,7 +27,8 @@
     ".NET",
     "ASP.NET",
     ".NET Core",
-    "dotnet"
+    "dotnet",
+    "coreclr"
   ],
   "capabilities": {
     "virtualWorkspaces": false,
@@ -35,95 +37,142 @@
     }
   },
   "defaults": {
+    "roslyn": "4.8.0-2.23428.2",
     "omniSharp": "1.39.7",
-    "razor": "7.0.0-preview.23328.2"
+    "razor": "7.0.0-preview.23258.1"
   },
   "main": "./dist/extension",
+  "l10n": "./l10n",
+  "brokeredServices": [
+    {
+      "moniker": {
+        "name": "Microsoft.CodeAnalysis.LanguageClient.SolutionSnapshotProvider",
+        "version": "0.1"
+      }
+    }
+  ],
   "scripts": {
     "vscode:prepublish": "tsc -p ./ && webpack --mode production",
-    "compile": "tsc -p ./ && tslint -p ./",
-    "compileDev": "tsc -p ./ && tslint -p ./ && webpack --mode development",
+    "l10nDevGenerateLocalizationBundle": "npx @vscode/l10n-dev export --outDir ./l10n ./src",
+    "compile": "tsc -p ./ && npx eslint ./ && npm run l10nDevGenerateLocalizationBundle",
+    "compileDev": "tsc -p ./ && npx eslint ./ && webpack --mode development && npm run l10nDevGenerateLocalizationBundle",
     "watch": "tsc -watch -p ./",
-    "tdd": "mocha --config ./.mocharc.jsonc --watch --watch-extensions ts test/unitTests/**/*.test.ts*",
+    "tdd": "mocha --config ./.mocharc.jsonc --watch --watch-extensions ts omnisharptest/omnisharpUnitTests/**/*.test.ts*",
     "test": "tsc -p ./ && gulp test",
-    "test:unit": "tsc -p ./ && gulp test:unit",
-    "test:feature": "tsc -p ./ && gulp test:feature",
-    "test:integration": "tsc -p ./ && gulp test:integration",
-    "test:integration:singleCsproj": "tsc -p ./ && gulp test:integration:singleCsproj",
+    "omnisharptest": "tsc -p ./ && gulp omnisharptest",
+    "omnisharptest:unit": "tsc -p ./ && gulp omnisharptest:unit",
+    "omnisharptest:feature": "tsc -p ./ && gulp omnisharptest:feature",
+    "omnisharptest:integration": "tsc -p ./ && gulp omnisharptest:integration",
+    "omnisharptest:integration:singleCsproj": "tsc -p ./ && gulp omnisharptest:integration:singleCsproj",
+    "omnisharptest:integration:slnWithCsproj": "tsc -p ./ && gulp omnisharptest:integration:slnWithCsproj",
+    "omnisharptest:integration:slnFilterWithCsproj": "tsc -p ./ && gulp omnisharptest:integration:slnFilterWithCsproj",
+    "omnisharptest:artifacts": "tsc -p ./ && mocha out/omnisharptest/omnisharpArtifactTests/**/*.test.js",
     "test:integration:slnWithCsproj": "tsc -p ./ && gulp test:integration:slnWithCsproj",
-    "test:integration:slnFilterWithCsproj": "tsc -p ./ && gulp test:integration:slnFilterWithCsproj",
-    "test:release": "tsc -p ./ && mocha out/test/releaseTests/**/*.test.js",
-    "test:artifacts": "tsc -p ./ && mocha out/test/artifactTests/**/*.test.js",
     "unpackage:vsix": "gulp vsix:release:unpackage",
-    "updatePackageDependencies": "gulp updatePackageDependencies"
+    "updatePackageDependencies": "gulp updatePackageDependencies",
+    "l10nDevGenerateXlf": "npx @vscode/l10n-dev generate-xlf ./package.nls.json ./l10n/bundle.l10n.json --outFile ./loc/vscode-csharp.xlf",
+    "l10nDevImportXlf": "npx @vscode/l10n-dev import-xlf ./loc/vscode-csharp.*.xlf --outDir ./l10n && move l10n\\package.nls.*.json ."
   },
+  "extensionDependencies": [
+    "ms-dotnettools.vscode-dotnet-runtime"
+  ],
   "dependencies": {
+    "@microsoft/servicehub-framework": "4.2.99-beta",
+    "@octokit/rest": "^20.0.1",
     "@types/cross-spawn": "6.0.2",
-    "@vscode/debugprotocol": "1.61.0",
-    "@vscode/extension-telemetry": "0.8.2",
+    "@vscode/debugprotocol": "1.56.0",
+    "@vscode/extension-telemetry": "0.6.2",
     "async-file": "2.0.2",
-    "cross-spawn": "7.0.3",
-    "fs-extra": "11.1.1",
-    "http-proxy-agent": "5.0.0",
-    "https-proxy-agent": "5.0.1",
-    "jsonc-parser": "3.2.0",
+    "cross-spawn": "6.0.5",
+    "fs-extra": "9.1.0",
+    "http-proxy-agent": "4.0.1",
+    "https-proxy-agent": "5.0.0",
+    "jsonc-parser": "3.0.0",
     "microsoft.aspnetcore.razor.vscode": "https://download.visualstudio.microsoft.com/download/pr/aee63398-023f-48db-bba2-30162c68f0c4/0af42abab690d5de903a4a814d6aedc1/microsoft.aspnetcore.razor.vscode-7.0.0-preview.23363.1.tgz",
+    "nerdbank-gitversioning": "^3.6.79-alpha",
     "node-machine-id": "1.1.12",
-    "request-light": "0.7.0",
+    "ps-list": "7.2.0",
+    "request-light": "0.4.0",
     "rxjs": "6.6.7",
-    "semver": "7.5.4",
+    "semver": "5.7.2",
     "stream": "0.0.2",
     "strip-bom": "5.0.0",
     "strip-bom-buf": "2.0.0",
     "tar": "^6.1.15",
     "tmp": "0.0.33",
-    "vscode-languageserver-protocol": "3.17.3",
-    "vscode-nls": "5.2.0",
+    "uuid": "^9.0.0",
+    "vscode-html-languageservice": "^5.0.1",
+    "vscode-js-debug-browsers": "^1.0.5",
+    "vscode-jsonrpc": "8.2.0-next.0",
+    "vscode-languageclient": "8.2.0-next.1",
+    "vscode-languageserver-protocol": "3.17.4-next.1",
+    "vscode-languageserver-textdocument": "^1.0.5",
+    "vscode-nls": "5.0.1",
     "yauzl": "2.10.0"
   },
   "devDependencies": {
-    "@types/archiver": "5.3.2",
-    "@types/chai": "4.3.5",
+    "@jest/globals": "^29.6.2",
+    "@types/archiver": "5.1.0",
+    "@types/chai": "4.2.16",
     "@types/chai-arrays": "2.0.0",
-    "@types/chai-as-promised": "7.1.5",
+    "@types/chai-as-promised": "7.1.3",
     "@types/chai-string": "1.4.2",
     "@types/del": "3.0.1",
-    "@types/fs-extra": "11.0.1",
-    "@types/gulp": "4.0.13",
-    "@types/minimist": "1.2.2",
+    "@types/fs-extra": "5.0.4",
+    "@types/gulp": "4.0.5",
+    "@types/minimist": "1.2.1",
     "@types/mocha": "5.2.5",
-    "@types/node": "20.4.6",
-    "@types/semver": "7.5.0",
+    "@types/node": "16.11.38",
+    "@types/semver": "5.5.0",
     "@types/tar": "6.1.5",
     "@types/tmp": "0.0.33",
-    "@types/unzipper": "^0.10.6",
-    "@types/vscode": "1.69.0",
+    "@types/unzipper": "^0.9.1",
+    "@types/uuid": "^9.0.1",
+    "@types/vscode": "1.73.0",
     "@types/yauzl": "2.10.0",
+    "@typescript-eslint/eslint-plugin": "^5.61.0",
+    "@typescript-eslint/parser": "^5.61.0",
     "@vscode/test-electron": "2.3.4",
-    "archiver": "5.3.1",
-    "chai": "4.3.7",
+    "archiver": "5.3.0",
+    "chai": "4.3.4",
     "chai-arrays": "2.2.0",
     "chai-as-promised": "7.1.1",
     "chai-fs": "2.0.0",
     "chai-string": "1.5.0",
     "del": "3.0.0",
-    "find-versions": "5.1.0",
+    "eslint": "^8.43.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-config-standard-with-typescript": "^35.0.0",
+    "eslint-plugin-header": "^3.1.1",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^15.7.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-unicorn": "^47.0.0",
+    "find-versions": "4.0.0",
     "get-port": "5.1.1",
-    "glob-promise": "6.0.3",
-    "gulp": "^4.0.2",
+    "glob-promise": "4.1.0",
+    "gulp": "4.0.2",
+    "jest": "^29.6.2",
+    "jest-cli": "^29.6.4",
+    "js-yaml": ">=3.13.1",
+    "minimatch": "3.0.5",
     "mocha": "10.0.0",
-    "mock-fs": "5.2.0",
-    "mock-http-server": "1.4.5",
-    "ts-loader": "9.4.4",
-    "ts-node": "10.9.1",
-    "tslint": "5.20.1",
-    "tslint-microsoft-contrib": "6.0.0",
-    "tslint-no-unused-expression-chai": "0.1.4",
-    "typescript": "5.1.6",
-    "unzipper": "0.10.14",
-    "vsce": "^2.15.0",
-    "webpack": "5.88.2",
-    "webpack-cli": "5.1.4"
+    "mock-fs": "^4.13.0",
+    "mock-http-server": "1.4.2",
+    "octokit": "^3.1.0",
+    "prettier": "2.8.8",
+    "rimraf": "2.6.3",
+    "source-map-support": "^0.5.21",
+    "ts-jest": "^29.1.1",
+    "ts-loader": "9.0.0",
+    "ts-node": "9.1.1",
+    "typescript": "^5.1.6",
+    "unzipper": "0.10.11",
+    "vsce": "2.9.2",
+    "vscode-uri": "^3.0.7",
+    "webpack": "5.76.0",
+    "webpack-cli": "4.6.0"
   },
   "runtimeDependencies": [
     {
@@ -466,8 +515,143 @@
     {
       "id": "Razor",
       "description": "Razor Language Server (Windows / x64)",
-      "url": "https://download.visualstudio.microsoft.com/download/pr/51d2bf3c-cb3c-4385-b59f-d4d6c9a96743/3b7fc7c2f06e48d78bec2125adcc41aa/razorlanguageserver-win-x64-7.0.0-preview.23328.2.zip",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/0b0d800b-570c-446a-8e29-4130bd68c63b/a48c3e83b44a34ddb295099c55e31e7e/razorlanguageserver-win-x64-7.0.0-preview.23423.3.zip",
       "installPath": ".razor",
+      "platforms": [
+        "win32"
+      ],
+      "architectures": [
+        "x86_64"
+      ],
+      "integrity": "A7815AE5A9BEFE7EB5C0006343341A38D0F7A662865DAD21F0842E064322C186"
+    },
+    {
+      "id": "Razor",
+      "description": "Razor Language Server (Windows / x86)",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/0b0d800b-570c-446a-8e29-4130bd68c63b/e188fa3cbd9a5601701d0f8de0705496/razorlanguageserver-win-x86-7.0.0-preview.23423.3.zip",
+      "installPath": ".razor",
+      "platforms": [
+        "win32"
+      ],
+      "architectures": [
+        "x86"
+      ],
+      "integrity": "D543C2E513F93F91AEDD95AE2A410747D71D3E7CF4D32E0FA31F8B7691109F6F"
+    },
+    {
+      "id": "Razor",
+      "description": "Razor Language Server (Windows / ARM64)",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/0b0d800b-570c-446a-8e29-4130bd68c63b/695b332017bfa81af74787904979fde8/razorlanguageserver-win-arm64-7.0.0-preview.23423.3.zip",
+      "installPath": ".razor",
+      "platforms": [
+        "win32"
+      ],
+      "architectures": [
+        "arm64"
+      ],
+      "integrity": "DF2E2F442BE365DE390F7402CE69E5514D91D379A4A755133B696CC2972CFE53"
+    },
+    {
+      "id": "Razor",
+      "description": "Razor Language Server (Linux / x64)",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/0b0d800b-570c-446a-8e29-4130bd68c63b/b9653cb6c40f965986266f70ae7dab25/razorlanguageserver-linux-x64-7.0.0-preview.23423.3.zip",
+      "installPath": ".razor",
+      "platforms": [
+        "linux"
+      ],
+      "architectures": [
+        "x86_64"
+      ],
+      "binaries": [
+        "./rzls"
+      ],
+      "integrity": "87D1357F1BCDCBA9D775677B5ADFFE22D87B013155B3ADBDA69F9CEA0F5C0FCF"
+    },
+    {
+      "id": "Razor",
+      "description": "Razor Language Server (Linux ARM64)",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/0b0d800b-570c-446a-8e29-4130bd68c63b/4aca138f5c6299422e240dcc50689a67/razorlanguageserver-linux-arm64-7.0.0-preview.23423.3.zip",
+      "installPath": ".razor",
+      "platforms": [
+        "linux"
+      ],
+      "architectures": [
+        "arm64"
+      ],
+      "binaries": [
+        "./rzls"
+      ],
+      "integrity": "9E8C75DBEA512D7FCE5D96D240D57E6C12161EDFE7482A8F68F99BD5019F3EC1"
+    },
+    {
+      "id": "Razor",
+      "description": "Razor Language Server (Linux musl / x64)",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/0b0d800b-570c-446a-8e29-4130bd68c63b/7d1e4e0bf72de43dc272d22de2486633/razorlanguageserver-linux-musl-x64-7.0.0-preview.23423.3.zip",
+      "installPath": ".razor",
+      "platforms": [
+        "linux-musl"
+      ],
+      "architectures": [
+        "x86_64"
+      ],
+      "binaries": [
+        "./rzls"
+      ],
+      "integrity": "AD36EAA27AC75EF161E4642454B995FFE71751ED7B89C6B4233D1D577CB763A6"
+    },
+    {
+      "id": "Razor",
+      "description": "Razor Language Server (Linux musl ARM64)",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/0b0d800b-570c-446a-8e29-4130bd68c63b/eee386c129c18ba1705fe411cb981a20/razorlanguageserver-linux-musl-arm64-7.0.0-preview.23423.3.zip",
+      "installPath": ".razor",
+      "platforms": [
+        "linux-musl"
+      ],
+      "architectures": [
+        "arm64"
+      ],
+      "binaries": [
+        "./rzls"
+      ],
+      "integrity": "EC8279752254F33AECC5D59E7D02DC93BB37EF2740CC63ACFF0DB78725BF169C"
+    },
+    {
+      "id": "Razor",
+      "description": "Razor Language Server (macOS / x64)",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/0b0d800b-570c-446a-8e29-4130bd68c63b/74f8a06bc496f54b37466c382c6744ee/razorlanguageserver-osx-x64-7.0.0-preview.23423.3.zip",
+      "installPath": ".razor",
+      "platforms": [
+        "darwin"
+      ],
+      "architectures": [
+        "x86_64"
+      ],
+      "binaries": [
+        "./rzls"
+      ],
+      "integrity": "FE3356F653A786A5442E99AA6FE19DD9215962F9B926AD2E723596A5B6E3C135"
+    },
+    {
+      "id": "Razor",
+      "description": "Razor Language Server (macOS ARM64)",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/0b0d800b-570c-446a-8e29-4130bd68c63b/679c6fe63c016298914264c33326f2ea/razorlanguageserver-osx-arm64-7.0.0-preview.23423.3.zip",
+      "installPath": ".razor",
+      "platforms": [
+        "darwin"
+      ],
+      "architectures": [
+        "arm64"
+      ],
+      "binaries": [
+        "./rzls"
+      ],
+      "integrity": "594EAE393087FD002829041B261D6777CBA17E612783C548E1B9B2D20BE97E54"
+    },
+    {
+      "id": "RazorOmnisharp",
+      "description": "Razor Language Server for OmniSharp (Windows / x64)",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/aee63398-023f-48db-bba2-30162c68f0c4/8d42e62ea4051381c219b3e31bc4eced/razorlanguageserver-win-x64-7.0.0-preview.23363.1.zip",
+      "installPath": ".razoromnisharp",
       "platforms": [
         "win32"
       ],
@@ -476,10 +660,10 @@
       ]
     },
     {
-      "id": "Razor",
-      "description": "Razor Language Server (Windows / x86)",
-      "url": "https://download.visualstudio.microsoft.com/download/pr/51d2bf3c-cb3c-4385-b59f-d4d6c9a96743/d1b37bd821529147e7ffec08f98be17c/razorlanguageserver-win-x86-7.0.0-preview.23328.2.zip",
-      "installPath": ".razor",
+      "id": "RazorOmnisharp",
+      "description": "Razor Language Server for OmniSharp (Windows / x86)",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/aee63398-023f-48db-bba2-30162c68f0c4/e440c4f3a4a96334fe177513935fa010/razorlanguageserver-win-x86-7.0.0-preview.23363.1.zip",
+      "installPath": ".razoromnisharp",
       "platforms": [
         "win32"
       ],
@@ -488,10 +672,10 @@
       ]
     },
     {
-      "id": "Razor",
-      "description": "Razor Language Server (Windows / ARM64)",
-      "url": "https://download.visualstudio.microsoft.com/download/pr/51d2bf3c-cb3c-4385-b59f-d4d6c9a96743/b2aa92ccbdf03761b6783bf123bfbe22/razorlanguageserver-win-arm64-7.0.0-preview.23328.2.zip",
-      "installPath": ".razor",
+      "id": "RazorOmnisharp",
+      "description": "Razor Language Server for OmniSharp (Windows / ARM64)",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/aee63398-023f-48db-bba2-30162c68f0c4/4ef26e45cf32fe8d51c0e7dd21f1fef6/razorlanguageserver-win-arm64-7.0.0-preview.23363.1.zip",
+      "installPath": ".razoromnisharp",
       "platforms": [
         "win32"
       ],
@@ -500,10 +684,10 @@
       ]
     },
     {
-      "id": "Razor",
-      "description": "Razor Language Server (Linux / x64)",
-      "url": "https://download.visualstudio.microsoft.com/download/pr/51d2bf3c-cb3c-4385-b59f-d4d6c9a96743/68986857aef04be58efab25ffd338a93/razorlanguageserver-linux-x64-7.0.0-preview.23328.2.zip",
-      "installPath": ".razor",
+      "id": "RazorOmnisharp",
+      "description": "Razor Language Server for OmniSharp (Linux / x64)",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/aee63398-023f-48db-bba2-30162c68f0c4/6d4e23a3c7cf0465743950a39515a716/razorlanguageserver-linux-x64-7.0.0-preview.23363.1.zip",
+      "installPath": ".razoromnisharp",
       "platforms": [
         "linux"
       ],
@@ -515,10 +699,10 @@
       ]
     },
     {
-      "id": "Razor",
-      "description": "Razor Language Server (Linux ARM64)",
-      "url": "https://download.visualstudio.microsoft.com/download/pr/51d2bf3c-cb3c-4385-b59f-d4d6c9a96743/c74964f4e130b50f9aef47d430c34a97/razorlanguageserver-linux-arm64-7.0.0-preview.23328.2.zip",
-      "installPath": ".razor",
+      "id": "RazorOmnisharp",
+      "description": "Razor Language Server for OmniSharp (Linux ARM64)",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/aee63398-023f-48db-bba2-30162c68f0c4/85deebd44647ebf65724cc291d722283/razorlanguageserver-linux-arm64-7.0.0-preview.23363.1.zip",
+      "installPath": ".razoromnisharp",
       "platforms": [
         "linux"
       ],
@@ -530,10 +714,10 @@
       ]
     },
     {
-      "id": "Razor",
-      "description": "Razor Language Server (Linux musl / x64)",
-      "url": "https://download.visualstudio.microsoft.com/download/pr/51d2bf3c-cb3c-4385-b59f-d4d6c9a96743/c204acfa0fd9d0e06fbcc3aac3ba846e/razorlanguageserver-linux-musl-x64-7.0.0-preview.23328.2.zip",
-      "installPath": ".razor",
+      "id": "RazorOmnisharp",
+      "description": "Razor Language Server for OmniSharp (Linux musl / x64)",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/aee63398-023f-48db-bba2-30162c68f0c4/4f0caa94ae182785655efb15eafcef23/razorlanguageserver-linux-musl-x64-7.0.0-preview.23363.1.zip",
+      "installPath": ".razoromnisharp",
       "platforms": [
         "linux-musl"
       ],
@@ -545,10 +729,10 @@
       ]
     },
     {
-      "id": "Razor",
-      "description": "Razor Language Server (Linux musl ARM64)",
-      "url": "https://download.visualstudio.microsoft.com/download/pr/51d2bf3c-cb3c-4385-b59f-d4d6c9a96743/7ad5dd2c8780d3e4eaaafb5352a21afa/razorlanguageserver-linux-musl-arm64-7.0.0-preview.23328.2.zip",
-      "installPath": ".razor",
+      "id": "RazorOmnisharp",
+      "description": "Razor Language Server for OmniSharp (Linux musl ARM64)",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/aee63398-023f-48db-bba2-30162c68f0c4/0a24828206a6f3b4bc743d058ef88ce7/razorlanguageserver-linux-musl-arm64-7.0.0-preview.23363.1.zip",
+      "installPath": ".razoromnisharp",
       "platforms": [
         "linux-musl"
       ],
@@ -560,10 +744,10 @@
       ]
     },
     {
-      "id": "Razor",
-      "description": "Razor Language Server (macOS / x64)",
-      "url": "https://download.visualstudio.microsoft.com/download/pr/51d2bf3c-cb3c-4385-b59f-d4d6c9a96743/d7017a3e07d15f057353ab21b8710714/razorlanguageserver-osx-x64-7.0.0-preview.23328.2.zip",
-      "installPath": ".razor",
+      "id": "RazorOmnisharp",
+      "description": "Razor Language Server for OmniSharp (macOS / x64)",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/aee63398-023f-48db-bba2-30162c68f0c4/2afcafaf41082989efcc10405abb9314/razorlanguageserver-osx-x64-7.0.0-preview.23363.1.zip",
+      "installPath": ".razoromnisharp",
       "platforms": [
         "darwin"
       ],
@@ -575,10 +759,10 @@
       ]
     },
     {
-      "id": "Razor",
-      "description": "Razor Language Server (macOS ARM64)",
-      "url": "https://download.visualstudio.microsoft.com/download/pr/51d2bf3c-cb3c-4385-b59f-d4d6c9a96743/a31700a64049f7c770a525662ef74f3c/razorlanguageserver-osx-arm64-7.0.0-preview.23328.2.zip",
-      "installPath": ".razor",
+      "id": "RazorOmnisharp",
+      "description": "Razor Language Server for OmniSharp (macOS ARM64)",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/aee63398-023f-48db-bba2-30162c68f0c4/8bf2ed2f00d481a5987e3eb5165afddd/razorlanguageserver-osx-arm64-7.0.0-preview.23363.1.zip",
+      "installPath": ".razoromnisharp",
       "platforms": [
         "darwin"
       ],
@@ -591,13 +775,14 @@
     }
   ],
   "engines": {
-    "vscode": "^1.69.0"
+    "vscode": "1.73.0"
   },
   "activationEvents": [
     "onDebugInitialConfigurations",
     "onDebugResolve:blazorwasm",
     "onDebugResolve:coreclr",
     "onDebugResolve:clr",
+    "onDebugResolve:dotnet",
     "onLanguage:csharp",
     "onLanguage:aspnetcorerazor",
     "onCommand:o.restart",
@@ -606,6 +791,7 @@
     "onCommand:dotnet.restore.project",
     "onCommand:dotnet.restore.all",
     "onCommand:dotnet.generateAssets",
+    "onCommand:dotnet.openSolution",
     "onCommand:csharp.downloadDebugger",
     "onCommand:csharp.listProcess",
     "onCommand:csharp.listRemoteProcess",
@@ -1188,43 +1374,60 @@
       {
         "fileMatch": "global.json",
         "url": "http://json.schemastore.org/global"
+      },
+      {
+        "fileMatch": "launchSettings.json",
+        "url": "https://json.schemastore.org/launchsettings.json"
       }
     ],
     "commands": [
       {
         "command": "o.restart",
         "title": "Restart OmniSharp",
-        "category": "OmniSharp"
+        "category": "OmniSharp",
+        "enablement": "config.dotnet.server.useOmnisharp"
       },
       {
         "command": "o.pickProjectAndStart",
         "title": "Select Project",
-        "category": "OmniSharp"
+        "category": "OmniSharp",
+        "enablement": "config.dotnet.server.useOmnisharp"
+      },
+      {
+        "command": "dotnet.openSolution",
+        "title": "Open Solution",
+        "category": ".NET",
+        "enablement": "!config.dotnet.server.useOmnisharp && dotnet.server.activatedStandalone"
       },
       {
         "command": "o.fixAll.solution",
         "title": "Fix all occurrences of a code issue within solution",
-        "category": "OmniSharp"
+        "category": "OmniSharp",
+        "enablement": "config.dotnet.server.useOmnisharp"
       },
       {
         "command": "o.fixAll.project",
         "title": "Fix all occurrences of a code issue within project",
-        "category": "OmniSharp"
+        "category": "OmniSharp",
+        "enablement": "config.dotnet.server.useOmnisharp"
       },
       {
         "command": "o.fixAll.document",
         "title": "Fix all occurrences of a code issue within document",
-        "category": "OmniSharp"
+        "category": "OmniSharp",
+        "enablement": "config.dotnet.server.useOmnisharp"
       },
       {
         "command": "o.reanalyze.allProjects",
         "title": "Analyze all projects",
-        "category": "OmniSharp"
+        "category": "OmniSharp",
+        "enablement": "config.dotnet.server.useOmnisharp"
       },
       {
         "command": "o.reanalyze.currentProject",
         "title": "Analyze current project",
-        "category": "OmniSharp"
+        "category": "OmniSharp",
+        "enablement": "config.dotnet.server.useOmnisharp"
       },
       {
         "command": "dotnet.generateAssets",
@@ -1234,12 +1437,14 @@
       {
         "command": "dotnet.restore.project",
         "title": "Restore Project",
-        "category": ".NET"
+        "category": ".NET",
+        "enablement": "config.dotnet.server.useOmnisharp"
       },
       {
         "command": "dotnet.restore.all",
         "title": "Restore All Projects",
-        "category": ".NET"
+        "category": ".NET",
+        "enablement": "config.dotnet.server.useOmnisharp"
       },
       {
         "command": "csharp.downloadDebugger",
@@ -1262,6 +1467,11 @@
         "category": "CSharp"
       },
       {
+        "command": "csharp.attachToProcess",
+        "title": "Attach to a .NET 5+ or .NET Core process",
+        "category": "Debug"
+      },
+      {
         "command": "csharp.reportIssue",
         "title": "Report an issue",
         "category": "CSharp"
@@ -1269,7 +1479,8 @@
       {
         "command": "csharp.showDecompilationTerms",
         "title": "Show the decompiler terms agreement",
-        "category": "CSharp"
+        "category": "CSharp",
+        "enablement": "config.dotnet.server.useOmnisharp"
       },
       {
         "command": "extension.showRazorCSharpWindow",
@@ -1289,12 +1500,20 @@
       {
         "command": "dotnet.test.runTestsInContext",
         "title": "Run Tests in Context",
-        "category": ".NET"
+        "category": ".NET",
+        "enablement": "dotnet.server.activatedStandalone"
       },
       {
         "command": "dotnet.test.debugTestsInContext",
         "title": "Debug Tests in Context",
-        "category": ".NET"
+        "category": ".NET",
+        "enablement": "dotnet.server.activatedStandalone"
+      },
+      {
+        "command": "dotnet.restartServer",
+        "title": "Restart Language Server",
+        "category": ".NET",
+        "enablement": "!config.dotnet.server.useOmnisharp"
       }
     ],
     "keybindings": [
@@ -1349,19 +1568,19 @@
             "properties": {
               "program": {
                 "type": "string",
-                "description": "Path to the application dll or .NET Core host executable to launch.\nThis property normally takes the form: '${workspaceFolder}/bin/Debug/(target-framework)/(project-name.dll)'\nExample: '${workspaceFolder}/bin/Debug/netcoreapp1.1/MyProject.dll'\n\nWhere:\n(target-framework) is the framework that the debugged project is being built for. This is normally found in the project file as the 'TargetFramework' property.\n(project-name.dll) is the name of debugged project's build output dll. This is normally the same as the project file name but with a '.dll' extension.",
+                "markdownDescription": "%generateOptionsSchema.program.markdownDescription%",
                 "default": "${workspaceFolder}/bin/Debug/<insert-target-framework-here>/<insert-project-name-here>.dll"
               },
               "cwd": {
                 "type": "string",
-                "description": "Path to the working directory of the program being debugged. Default is the current workspace.",
+                "description": "%generateOptionsSchema.cwd.description%",
                 "default": "${workspaceFolder}"
               },
               "args": {
                 "anyOf": [
                   {
                     "type": "array",
-                    "description": "Command line arguments passed to the program.",
+                    "description": "%generateOptionsSchema.args.0.description%",
                     "items": {
                       "type": "string"
                     },
@@ -1369,18 +1588,18 @@
                   },
                   {
                     "type": "string",
-                    "description": "Stringified version of command line arguments passed to the program.",
+                    "description": "%generateOptionsSchema.args.1.description%",
                     "default": ""
                   }
                 ]
               },
               "stopAtEntry": {
                 "type": "boolean",
-                "description": "If true, the debugger should stop at the entry point of the target.",
+                "markdownDescription": "%generateOptionsSchema.stopAtEntry.markdownDescription%",
                 "default": false
               },
               "launchBrowser": {
-                "description": "Describes options to launch a web browser as part of launch",
+                "description": "%generateOptionsSchema.launchBrowser.description%",
                 "default": {
                   "enabled": true
                 },
@@ -1391,16 +1610,16 @@
                 "properties": {
                   "enabled": {
                     "type": "boolean",
-                    "description": "Whether web browser launch is enabled",
+                    "description": "%generateOptionsSchema.launchBrowser.enabled.description%",
                     "default": true
                   },
                   "args": {
                     "type": "string",
-                    "description": "The arguments to pass to the command to open the browser. This is used only if the platform-specific element (`osx`, `linux` or `windows`) doesn't specify a value for `args`. Use ${auto-detect-url} to automatically use the address the server is listening to.",
+                    "description": "%generateOptionsSchema.launchBrowser.args.description%",
                     "default": "${auto-detect-url}"
                   },
                   "osx": {
-                    "description": "OSX-specific web launch configuration options. By default, this will start the browser using `open`.",
+                    "description": "%generateOptionsSchema.launchBrowser.osx.description%",
                     "default": {
                       "command": "open",
                       "args": "${auto-detect-url}"
@@ -1412,18 +1631,18 @@
                     "properties": {
                       "command": {
                         "type": "string",
-                        "description": "The executable which will start the web browser",
+                        "description": "%generateOptionsSchema.launchBrowser.osx.command.description%",
                         "default": "open"
                       },
                       "args": {
                         "type": "string",
-                        "description": "The arguments to pass to the command to open the browser. Use ${auto-detect-url} to automatically use the address the server is listening to.",
+                        "description": "%generateOptionsSchema.launchBrowser.osx.args.description%",
                         "default": "${auto-detect-url}"
                       }
                     }
                   },
                   "linux": {
-                    "description": "Linux-specific web launch configuration options. By default, this will start the browser using `xdg-open`.",
+                    "description": "%generateOptionsSchema.launchBrowser.linux.description%",
                     "default": {
                       "command": "xdg-open",
                       "args": "${auto-detect-url}"
@@ -1435,18 +1654,18 @@
                     "properties": {
                       "command": {
                         "type": "string",
-                        "description": "The executable which will start the web browser",
+                        "description": "%generateOptionsSchema.launchBrowser.linux.command.description%",
                         "default": "xdg-open"
                       },
                       "args": {
                         "type": "string",
-                        "description": "The arguments to pass to the command to open the browser. Use ${auto-detect-url} to automatically use the address the server is listening to.",
+                        "description": "%generateOptionsSchema.launchBrowser.linux.args.description%",
                         "default": "${auto-detect-url}"
                       }
                     }
                   },
                   "windows": {
-                    "description": "Windows-specific web launch configuration options. By default, this will start the browser using `cmd /c start`.",
+                    "description": "%generateOptionsSchema.launchBrowser.windows.description%",
                     "default": {
                       "command": "cmd.exe",
                       "args": "/C start ${auto-detect-url}"
@@ -1458,12 +1677,12 @@
                     "properties": {
                       "command": {
                         "type": "string",
-                        "description": "The executable which will start the web browser",
+                        "description": "%generateOptionsSchema.launchBrowser.windows.command.description%",
                         "default": "cmd.exe"
                       },
                       "args": {
                         "type": "string",
-                        "description": "The arguments to pass to the command to open the browser. Use ${auto-detect-url} to automatically use the address the server is listening to.",
+                        "description": "%generateOptionsSchema.launchBrowser.windows.args.description%",
                         "default": "/C start ${auto-detect-url}"
                       }
                     }
@@ -1475,12 +1694,12 @@
                 "additionalProperties": {
                   "type": "string"
                 },
-                "description": "Environment variables passed to the program.",
+                "description": "%generateOptionsSchema.env.description%",
                 "default": {}
               },
               "envFile": {
                 "type": "string",
-                "description": "Environment variables passed to the program by a file.",
+                "markdownDescription": "%generateOptionsSchema.envFile.markdownDescription%",
                 "default": "${workspaceFolder}/.env"
               },
               "console": {
@@ -1491,21 +1710,22 @@
                   "externalTerminal"
                 ],
                 "enumDescriptions": [
-                  "Output to the VS Code Debug Console. This doesn't support reading console input (ex:Console.ReadLine)",
-                  "VS Code's integrated terminal",
-                  "External terminal that can be configured via user settings"
+                  "%generateOptionsSchema.console.internalConsole.enumDescription%",
+                  "%generateOptionsSchema.console.integratedTerminal.enumDescription%",
+                  "%generateOptionsSchema.console.externalTerminal.enumDescription%"
                 ],
-                "description": "Where to launch the debug target.",
+                "markdownDescription": "%generateOptionsSchema.console.markdownDescription%",
+                "settingsDescription": "%generateOptionsSchema.console.settingsDescription%",
                 "default": "internalConsole"
               },
               "externalConsole": {
                 "type": "boolean",
-                "description": "Attribute 'externalConsole' is deprecated, use 'console' instead.",
+                "markdownDescription": "%generateOptionsSchema.externalConsole.markdownDescription%",
                 "default": false
               },
               "launchSettingsFilePath": {
                 "type": "string",
-                "description": "The path to a launchSettings.json file. If this isn't set, the debugger will search in '{cwd}/Properties/launchSettings.json'.",
+                "markdownDescription": "%generateOptionsSchema.launchSettingsFilePath.markdownDescription%",
                 "default": "${workspaceFolder}/Properties/launchSettings.json"
               },
               "launchSettingsProfile": {
@@ -1517,84 +1737,82 @@
                     "type": "null"
                   }
                 ],
-                "description": "If specified, indicates the name of the profile in launchSettings.json to use. This is ignored if launchSettings.json is not found. launchSettings.json will be read from the path specified should be the 'launchSettingsFilePath' property, or {cwd}/Properties/launchSettings.json if that isn't set. If this is set to null or an empty string then launchSettings.json is ignored. If this value is not specified the first 'Project' profile will be used.",
+                "description": "%generateOptionsSchema.launchSettingsProfile.description%",
                 "default": "<insert-profile-name>"
               },
               "sourceFileMap": {
                 "type": "object",
-                "description": "Optional source file mappings passed to the debug engine. Example: '{ \"C:\\foo\":\"/home/user/foo\" }'",
+                "markdownDescription": "%generateOptionsSchema.sourceFileMap.markdownDescription%",
                 "additionalProperties": {
                   "type": "string"
                 },
-                "default": {
-                  "<insert-source-path-here>": "<insert-target-path-here>"
-                }
+                "default": {}
               },
               "justMyCode": {
                 "type": "boolean",
-                "description": "Optional flag to only show user code.",
+                "markdownDescription": "%generateOptionsSchema.justMyCode.markdownDescription%",
                 "default": true
               },
               "requireExactSource": {
                 "type": "boolean",
-                "description": "Optional flag to require current source code to match the pdb.",
+                "markdownDescription": "%generateOptionsSchema.requireExactSource.markdownDescription%",
                 "default": true
               },
               "enableStepFiltering": {
                 "type": "boolean",
-                "description": "Optional flag to enable stepping over Properties and Operators.",
+                "markdownDescription": "%generateOptionsSchema.enableStepFiltering.markdownDescription%",
                 "default": true
               },
               "logging": {
-                "description": "Optional flags to determine what types of messages should be logged to the output window.",
+                "description": "%generateOptionsSchema.logging.description%",
                 "type": "object",
                 "required": [],
                 "default": {},
                 "properties": {
                   "exceptions": {
                     "type": "boolean",
-                    "description": "Optional flag to determine whether exception messages should be logged to the output window.",
+                    "markdownDescription": "%generateOptionsSchema.logging.exceptions.markdownDescription%",
                     "default": true
                   },
                   "moduleLoad": {
                     "type": "boolean",
-                    "description": "Optional flag to determine whether module load events should be logged to the output window.",
+                    "markdownDescription": "%generateOptionsSchema.logging.moduleLoad.markdownDescription%",
                     "default": true
                   },
                   "programOutput": {
                     "type": "boolean",
-                    "description": "Optional flag to determine whether program output should be logged to the output window when not using an external console.",
+                    "markdownDescription": "%generateOptionsSchema.logging.programOutput.markdownDescription%",
                     "default": true
                   },
                   "engineLogging": {
                     "type": "boolean",
-                    "description": "Optional flag to determine whether diagnostic engine logs should be logged to the output window.",
+                    "markdownDescription": "%generateOptionsSchema.logging.engineLogging.markdownDescription%",
                     "default": false
                   },
                   "browserStdOut": {
                     "type": "boolean",
-                    "description": "Optional flag to determine if stdout text from the launching the web browser should be logged to the output window.",
+                    "markdownDescription": "%generateOptionsSchema.logging.browserStdOut.markdownDescription%",
                     "default": true
                   },
                   "elapsedTiming": {
                     "type": "boolean",
-                    "description": "If true, engine logging will include `adapterElapsedTime` and `engineElapsedTime` properties to indicate the amount of time, in microseconds, that a request took.",
+                    "markdownDescription": "%generateOptionsSchema.logging.elapsedTiming.markdownDescription%",
                     "default": false
                   },
                   "threadExit": {
                     "type": "boolean",
-                    "description": "Controls if a message is logged when a thread in the target process exits. Default: `false`.",
+                    "markdownDescription": "%generateOptionsSchema.logging.threadExit.markdownDescription%",
                     "default": false
                   },
                   "processExit": {
                     "type": "boolean",
-                    "description": "Controls if a message is logged when the target process exits, or debugging is stopped. Default: `true`.",
+                    "markdownDescription": "%generateOptionsSchema.logging.processExit.markdownDescription%",
                     "default": true
                   }
                 }
               },
               "pipeTransport": {
-                "description": "When present, this tells the debugger to connect to a remote computer using another executable as a pipe that will relay standard input/output between VS Code and the .NET Core debugger backend executable (netcoredbg).",
+                "description": "When present, this tells the debugger to connect to a remote computer using another executable as a pipe that will relay standard input/output between VS Code and the .NET Core debugger backend executable (vsdbg).",
                 "type": "object",
                 "required": [
                   "debuggerPath"
@@ -1608,19 +1826,19 @@
                 "properties": {
                   "pipeCwd": {
                     "type": "string",
-                    "description": "The fully qualified path to the working directory for the pipe program.",
+                    "description": "%generateOptionsSchema.pipeTransport.pipeCwd.description%",
                     "default": "${workspaceFolder}"
                   },
                   "pipeProgram": {
                     "type": "string",
-                    "description": "The fully qualified pipe command to execute.",
+                    "description": "%generateOptionsSchema.pipeTransport.pipeProgram.description%",
                     "default": "enter the fully qualified path for the pipe program name, for example '/usr/bin/ssh'"
                   },
                   "pipeArgs": {
                     "anyOf": [
                       {
                         "type": "array",
-                        "description": "Command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                        "description": "%generateOptionsSchema.pipeTransport.pipeArgs.0.description%",
                         "items": {
                           "type": "string"
                         },
@@ -1628,7 +1846,7 @@
                       },
                       {
                         "type": "string",
-                        "description": "Stringified version of command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                        "description": "%generateOptionsSchema.pipeTransport.pipeArgs.1.description%",
                         "default": ""
                       }
                     ],
@@ -1637,23 +1855,23 @@
                   "debuggerPath": {
                     "type": "string",
                     "description": "The full path to the debugger on the target machine.",
-                    "default": "enter the path for the debugger on the target machine, for example /usr/bin/netcoredbg"
+                    "default": "enter the path for the debugger on the target machine, for example ~/vsdbg/vsdbg"
                   },
                   "pipeEnv": {
                     "type": "object",
                     "additionalProperties": {
                       "type": "string"
                     },
-                    "description": "Environment variables passed to the pipe program.",
+                    "description": "%generateOptionsSchema.pipeTransport.pipeEnv.description%",
                     "default": {}
                   },
                   "quoteArgs": {
                     "type": "boolean",
-                    "description": "Should arguments that contain characters that need to be quoted (example: spaces) be quoted? Defaults to 'true'. If set to false, the debugger command will no longer be automatically quoted.",
+                    "description": "%generateOptionsSchema.pipeTransport.quoteArgs.description%",
                     "default": true
                   },
                   "windows": {
-                    "description": "Windows-specific pipe launch configuration options",
+                    "description": "%generateOptionsSchema.pipeTransport.windows.description%",
                     "default": {
                       "pipeCwd": "${workspaceFolder}",
                       "pipeProgram": "enter the fully qualified path for the pipe program name, for example 'c:\\tools\\plink.exe'",
@@ -1663,19 +1881,19 @@
                     "properties": {
                       "pipeCwd": {
                         "type": "string",
-                        "description": "The fully qualified path to the working directory for the pipe program.",
+                        "description": "%generateOptionsSchema.pipeTransport.windows.pipeCwd.description%",
                         "default": "${workspaceFolder}"
                       },
                       "pipeProgram": {
                         "type": "string",
-                        "description": "The fully qualified pipe command to execute.",
+                        "description": "%generateOptionsSchema.pipeTransport.windows.pipeProgram.description%",
                         "default": "enter the fully qualified path for the pipe program name, for example '/usr/bin/ssh'"
                       },
                       "pipeArgs": {
                         "anyOf": [
                           {
                             "type": "array",
-                            "description": "Command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                            "description": "%generateOptionsSchema.pipeTransport.windows.pipeArgs.0.description%",
                             "items": {
                               "type": "string"
                             },
@@ -1683,7 +1901,7 @@
                           },
                           {
                             "type": "string",
-                            "description": "Stringified version of command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                            "description": "%generateOptionsSchema.pipeTransport.windows.pipeArgs.1.description%",
                             "default": ""
                           }
                         ],
@@ -1691,7 +1909,7 @@
                       },
                       "quoteArgs": {
                         "type": "boolean",
-                        "description": "Should arguments that contain characters that need to be quoted (example: spaces) be quoted? Defaults to 'true'. If set to false, the debugger command will no longer be automatically quoted.",
+                        "description": "%generateOptionsSchema.pipeTransport.windows.quoteArgs.description%",
                         "default": true
                       },
                       "pipeEnv": {
@@ -1699,13 +1917,13 @@
                         "additionalProperties": {
                           "type": "string"
                         },
-                        "description": "Environment variables passed to the pipe program.",
+                        "description": "%generateOptionsSchema.pipeTransport.windows.pipeEnv.description%",
                         "default": {}
                       }
                     }
                   },
                   "osx": {
-                    "description": "OSX-specific pipe launch configuration options",
+                    "description": "%generateOptionsSchema.pipeTransport.osx.description%",
                     "default": {
                       "pipeCwd": "${workspaceFolder}",
                       "pipeProgram": "enter the fully qualified path for the pipe program name, for example '/usr/bin/ssh'",
@@ -1715,19 +1933,19 @@
                     "properties": {
                       "pipeCwd": {
                         "type": "string",
-                        "description": "The fully qualified path to the working directory for the pipe program.",
+                        "description": "%generateOptionsSchema.pipeTransport.osx.pipeCwd.description%",
                         "default": "${workspaceFolder}"
                       },
                       "pipeProgram": {
                         "type": "string",
-                        "description": "The fully qualified pipe command to execute.",
+                        "description": "%generateOptionsSchema.pipeTransport.osx.pipeProgram.description%",
                         "default": "enter the fully qualified path for the pipe program name, for example '/usr/bin/ssh'"
                       },
                       "pipeArgs": {
                         "anyOf": [
                           {
                             "type": "array",
-                            "description": "Command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                            "description": "%generateOptionsSchema.pipeTransport.osx.pipeArgs.0.description%",
                             "items": {
                               "type": "string"
                             },
@@ -1735,7 +1953,7 @@
                           },
                           {
                             "type": "string",
-                            "description": "Stringified version of command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                            "description": "%generateOptionsSchema.pipeTransport.osx.pipeArgs.1.description%",
                             "default": ""
                           }
                         ],
@@ -1743,7 +1961,7 @@
                       },
                       "quoteArgs": {
                         "type": "boolean",
-                        "description": "Should arguments that contain characters that need to be quoted (example: spaces) be quoted? Defaults to 'true'. If set to false, the debugger command will no longer be automatically quoted.",
+                        "description": "%generateOptionsSchema.pipeTransport.osx.quoteArgs.description%",
                         "default": true
                       },
                       "pipeEnv": {
@@ -1751,13 +1969,13 @@
                         "additionalProperties": {
                           "type": "string"
                         },
-                        "description": "Environment variables passed to the pipe program.",
+                        "description": "%generateOptionsSchema.pipeTransport.osx.pipeEnv.description%",
                         "default": {}
                       }
                     }
                   },
                   "linux": {
-                    "description": "Linux-specific pipe launch configuration options",
+                    "description": "%generateOptionsSchema.pipeTransport.linux.description%",
                     "default": {
                       "pipeCwd": "${workspaceFolder}",
                       "pipeProgram": "enter the fully qualified path for the pipe program name, for example '/usr/bin/ssh'",
@@ -1767,19 +1985,19 @@
                     "properties": {
                       "pipeCwd": {
                         "type": "string",
-                        "description": "The fully qualified path to the working directory for the pipe program.",
+                        "description": "%generateOptionsSchema.pipeTransport.linux.pipeCwd.description%",
                         "default": "${workspaceFolder}"
                       },
                       "pipeProgram": {
                         "type": "string",
-                        "description": "The fully qualified pipe command to execute.",
+                        "description": "%generateOptionsSchema.pipeTransport.linux.pipeProgram.description%",
                         "default": "enter the fully qualified path for the pipe program name, for example '/usr/bin/ssh'"
                       },
                       "pipeArgs": {
                         "anyOf": [
                           {
                             "type": "array",
-                            "description": "Command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                            "description": "%generateOptionsSchema.pipeTransport.linux.pipeArgs.0.description%",
                             "items": {
                               "type": "string"
                             },
@@ -1787,7 +2005,7 @@
                           },
                           {
                             "type": "string",
-                            "description": "Stringified version of command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                            "description": "%generateOptionsSchema.pipeTransport.linux.pipeArgs.1.description%",
                             "default": ""
                           }
                         ],
@@ -1795,7 +2013,7 @@
                       },
                       "quoteArgs": {
                         "type": "boolean",
-                        "description": "Should arguments that contain characters that need to be quoted (example: spaces) be quoted? Defaults to 'true'. If set to false, the debugger command will no longer be automatically quoted.",
+                        "description": "%generateOptionsSchema.pipeTransport.linux.quoteArgs.description%",
                         "default": true
                       },
                       "pipeEnv": {
@@ -1803,7 +2021,7 @@
                         "additionalProperties": {
                           "type": "string"
                         },
-                        "description": "Environment variables passed to the pipe program.",
+                        "description": "%generateOptionsSchema.pipeTransport.linux.pipeEnv.description%",
                         "default": {}
                       }
                     }
@@ -1812,11 +2030,11 @@
               },
               "suppressJITOptimizations": {
                 "type": "boolean",
-                "description": "If true, when an optimized module (.dll compiled in the Release configuration) loads in the target process, the debugger will ask the Just-In-Time compiler to generate code with optimizations disabled. For more information: https://aka.ms/VSCode-CS-LaunchJson#suppress-jit-optimizations",
+                "markdownDescription": "%generateOptionsSchema.suppressJITOptimizations.markdownDescription%",
                 "default": false
               },
               "symbolOptions": {
-                "description": "Options to control how symbols (.pdb files) are found and loaded.",
+                "description": "%generateOptionsSchema.symbolOptions.description%",
                 "default": {
                   "searchPaths": [],
                   "searchMicrosoftSymbolServer": false,
@@ -1844,11 +2062,11 @@
                   },
                   "cachePath": {
                     "type": "string",
-                    "description": "Directory where symbols downloaded from symbol servers should be cached. If unspecified, on Windows the debugger will default to %TEMP%\\SymbolCache, and on Linux and macOS the debugger will default to ~/.dotnet/symbolcache.",
-                    "default": "~/.dotnet/symbolcache"
+                    "description": "%generateOptionsSchema.symbolOptions.cachePath.description%",
+                    "default": ""
                   },
                   "moduleFilter": {
-                    "description": "Provides options to control which modules (.dll files) the debugger will attempt to load symbols (.pdb files) for.",
+                    "description": "%generateOptionsSchema.symbolOptions.moduleFilter.description%",
                     "default": {
                       "mode": "loadAllButExcluded",
                       "excludedModules": []
@@ -1865,10 +2083,10 @@
                           "loadOnlyIncluded"
                         ],
                         "enumDescriptions": [
-                          "Load symbols for all modules unless the module is in the 'excludedModules' array.",
-                          "Do not attempt to load symbols for ANY module unless it is in the 'includedModules' array, or it is included through the 'includeSymbolsNextToModules' setting."
+                          "%generateOptionsSchema.symbolOptions.moduleFilter.mode.loadAllButExcluded.enumDescription%",
+                          "%generateOptionsSchema.symbolOptions.moduleFilter.mode.loadOnlyIncluded.enumDescription%"
                         ],
-                        "description": "Controls which of the two basic operating modes the module filter operates in.",
+                        "description": "%generateOptionsSchema.symbolOptions.moduleFilter.mode.description%",
                         "default": "loadAllButExcluded"
                       },
                       "excludedModules": {
@@ -1876,7 +2094,7 @@
                         "items": {
                           "type": "string"
                         },
-                        "description": "Array of modules that the debugger should NOT load symbols for. Wildcards (example: MyCompany.*.dll) are supported.\n\nThis property is ignored unless 'mode' is set to 'loadAllButExcluded'.",
+                        "description": "%generateOptionsSchema.symbolOptions.moduleFilter.excludedModules.description%",
                         "default": []
                       },
                       "includedModules": {
@@ -1884,14 +2102,12 @@
                         "items": {
                           "type": "string"
                         },
-                        "description": "Array of modules that the debugger should load symbols for. Wildcards (example: MyCompany.*.dll) are supported.\n\nThis property is ignored unless 'mode' is set to 'loadOnlyIncluded'.",
-                        "default": [
-                          "MyExampleModule.dll"
-                        ]
+                        "description": "%generateOptionsSchema.symbolOptions.moduleFilter.includedModules.description%",
+                        "default": []
                       },
                       "includeSymbolsNextToModules": {
                         "type": "boolean",
-                        "description": "If true, for any module NOT in the 'includedModules' array, the debugger will still check next to the module itself and the launching executable, but it will not check paths on the symbol search list. This option defaults to 'true'.\n\nThis property is ignored unless 'mode' is set to 'loadOnlyIncluded'.",
+                        "description": "%generateOptionsSchema.symbolOptions.moduleFilter.includeSymbolsNextToModules.description%",
                         "default": true
                       }
                     }
@@ -1899,7 +2115,7 @@
                 }
               },
               "sourceLinkOptions": {
-                "description": "Options to control how Source Link connects to web servers. For more information: https://aka.ms/VSCode-CS-LaunchJson#source-link-options",
+                "markdownDescription": "%generateOptionsSchema.sourceLinkOptions.markdownDescription%",
                 "default": {
                   "*": {
                     "enabled": true
@@ -1911,7 +2127,7 @@
                   "properties": {
                     "enabled": {
                       "title": "boolean",
-                      "description": "Is Source Link enabled for this URL?  If unspecified, this option defaults to 'true'.",
+                      "markdownDescription": "%generateOptionsSchema.sourceLinkOptions.additionalItems.enabled.markdownDescription%",
                       "default": "true"
                     }
                   }
@@ -1919,25 +2135,25 @@
               },
               "allowFastEvaluate": {
                 "type": "boolean",
-                "description": "When true (the default state), the debugger will attempt faster evaluation by simulating execution of simple properties and methods.",
+                "description": "%generateOptionsSchema.allowFastEvaluate.description%",
                 "default": true
               },
               "targetOutputLogPath": {
                 "type": "string",
-                "description": "When set, text that the target application writes to stdout and stderr (ex: Console.WriteLine) will be saved to the specified file. This option is ignored if console is set to something other than internalConsole.",
-                "default": "${workspaceFolder}/out.txt"
+                "description": "%generateOptionsSchema.targetOutputLogPath.description%",
+                "default": ""
               },
               "targetArchitecture": {
                 "type": "string",
+                "markdownDescription": "%generateOptionsSchema.targetArchitecture.markdownDescription%",
                 "enum": [
                   "x86_64",
                   "arm64"
-                ],
-                "description": "The architecture of the debuggee. This will automatically be detected unless this parameter is set. Allowed values are x86_64 or arm64. This value is ignored on Linux."
+                ]
               },
               "checkForDevCert": {
                 "type": "boolean",
-                "description": "When true, the debugger will check if the computer has a self-signed HTTPS certificate used to develop web servers running on https endpoints. If unspecified, defaults to true when `serverReadyAction` is set. This option does nothing on Linux, VS Code remote, and VS Code Web UI scenarios. If the HTTPS certificate is not found or isn't trusted, the user will be prompted to install/trust it.",
+                "description": "%generateOptionsSchema.checkForDevCert.description%",
                 "default": true
               }
             }
@@ -1948,98 +2164,95 @@
             "properties": {
               "processName": {
                 "type": "string",
-                "description": "",
-                "default": "The process name to attach to. If this is used, 'processId' should not be used."
+                "default": "",
+                "markdownDescription": "%generateOptionsSchema.processName.markdownDescription%"
               },
               "processId": {
                 "anyOf": [
                   {
                     "type": "string",
-                    "description": "The process id to attach to. Use \"\" to get a list of running processes to attach to. If 'processId' used, 'processName' should not be used.",
+                    "markdownDescription": "%generateOptionsSchema.processId.0.markdownDescription%",
                     "default": ""
                   },
                   {
                     "type": "integer",
-                    "description": "The process id to attach to. Use \"\" to get a list of running processes to attach to. If 'processId' used, 'processName' should not be used.",
+                    "markdownDescription": "%generateOptionsSchema.processId.1.markdownDescription%",
                     "default": 0
                   }
                 ]
               },
               "sourceFileMap": {
                 "type": "object",
-                "description": "Optional source file mappings passed to the debug engine. Example: '{ \"C:\\foo\":\"/home/user/foo\" }'",
+                "markdownDescription": "%generateOptionsSchema.sourceFileMap.markdownDescription%",
                 "additionalProperties": {
                   "type": "string"
-                },
-                "default": {
-                  "<insert-source-path-here>": "<insert-target-path-here>"
                 }
               },
               "justMyCode": {
                 "type": "boolean",
-                "description": "Optional flag to only show user code.",
+                "markdownDescription": "%generateOptionsSchema.justMyCode.markdownDescription%",
                 "default": true
               },
               "requireExactSource": {
                 "type": "boolean",
-                "description": "Optional flag to require current source code to match the pdb.",
+                "markdownDescription": "%generateOptionsSchema.requireExactSource.markdownDescription%",
                 "default": true
               },
               "enableStepFiltering": {
                 "type": "boolean",
-                "description": "Optional flag to enable stepping over Properties and Operators.",
+                "markdownDescription": "%generateOptionsSchema.enableStepFiltering.markdownDescription%",
                 "default": true
               },
               "logging": {
-                "description": "Optional flags to determine what types of messages should be logged to the output window.",
+                "description": "%generateOptionsSchema.logging.description%",
                 "type": "object",
                 "required": [],
                 "default": {},
                 "properties": {
                   "exceptions": {
                     "type": "boolean",
-                    "description": "Optional flag to determine whether exception messages should be logged to the output window.",
+                    "markdownDescription": "%generateOptionsSchema.logging.exceptions.markdownDescription%",
                     "default": true
                   },
                   "moduleLoad": {
                     "type": "boolean",
-                    "description": "Optional flag to determine whether module load events should be logged to the output window.",
+                    "markdownDescription": "%generateOptionsSchema.logging.moduleLoad.markdownDescription%",
                     "default": true
                   },
                   "programOutput": {
                     "type": "boolean",
-                    "description": "Optional flag to determine whether program output should be logged to the output window when not using an external console.",
+                    "markdownDescription": "%generateOptionsSchema.logging.programOutput.markdownDescription%",
                     "default": true
                   },
                   "engineLogging": {
                     "type": "boolean",
-                    "description": "Optional flag to determine whether diagnostic engine logs should be logged to the output window.",
+                    "markdownDescription": "%generateOptionsSchema.logging.engineLogging.markdownDescription%",
                     "default": false
                   },
                   "browserStdOut": {
                     "type": "boolean",
-                    "description": "Optional flag to determine if stdout text from the launching the web browser should be logged to the output window.",
+                    "markdownDescription": "%generateOptionsSchema.logging.browserStdOut.markdownDescription%",
                     "default": true
                   },
                   "elapsedTiming": {
                     "type": "boolean",
-                    "description": "If true, engine logging will include `adapterElapsedTime` and `engineElapsedTime` properties to indicate the amount of time, in microseconds, that a request took.",
+                    "markdownDescription": "%generateOptionsSchema.logging.elapsedTiming.markdownDescription%",
                     "default": false
                   },
                   "threadExit": {
                     "type": "boolean",
-                    "description": "Controls if a message is logged when a thread in the target process exits. Default: `false`.",
+                    "markdownDescription": "%generateOptionsSchema.logging.threadExit.markdownDescription%",
                     "default": false
                   },
                   "processExit": {
                     "type": "boolean",
-                    "description": "Controls if a message is logged when the target process exits, or debugging is stopped. Default: `true`.",
+                    "markdownDescription": "%generateOptionsSchema.logging.processExit.markdownDescription%",
                     "default": true
                   }
                 }
               },
               "pipeTransport": {
-                "description": "When present, this tells the debugger to connect to a remote computer using another executable as a pipe that will relay standard input/output between VS Code and the .NET Core debugger backend executable (netcoredbg).",
+                "description": "When present, this tells the debugger to connect to a remote computer using another executable as a pipe that will relay standard input/output between VS Code and the .NET Core debugger backend executable (vsdbg).",
                 "type": "object",
                 "required": [
                   "debuggerPath"
@@ -2053,19 +2266,19 @@
                 "properties": {
                   "pipeCwd": {
                     "type": "string",
-                    "description": "The fully qualified path to the working directory for the pipe program.",
+                    "description": "%generateOptionsSchema.pipeTransport.pipeCwd.description%",
                     "default": "${workspaceFolder}"
                   },
                   "pipeProgram": {
                     "type": "string",
-                    "description": "The fully qualified pipe command to execute.",
+                    "description": "%generateOptionsSchema.pipeTransport.pipeProgram.description%",
                     "default": "enter the fully qualified path for the pipe program name, for example '/usr/bin/ssh'"
                   },
                   "pipeArgs": {
                     "anyOf": [
                       {
                         "type": "array",
-                        "description": "Command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                        "description": "%generateOptionsSchema.pipeTransport.pipeArgs.0.description%",
                         "items": {
                           "type": "string"
                         },
@@ -2073,7 +2286,7 @@
                       },
                       {
                         "type": "string",
-                        "description": "Stringified version of command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                        "description": "%generateOptionsSchema.pipeTransport.pipeArgs.1.description%",
                         "default": ""
                       }
                     ],
@@ -2082,23 +2295,23 @@
                   "debuggerPath": {
                     "type": "string",
                     "description": "The full path to the debugger on the target machine.",
-                    "default": "enter the path for the debugger on the target machine, for example /usr/bin/netcoredbg"
+                    "default": "enter the path for the debugger on the target machine, for example ~/vsdbg/vsdbg"
                   },
                   "pipeEnv": {
                     "type": "object",
                     "additionalProperties": {
                       "type": "string"
                     },
-                    "description": "Environment variables passed to the pipe program.",
+                    "description": "%generateOptionsSchema.pipeTransport.pipeEnv.description%",
                     "default": {}
                   },
                   "quoteArgs": {
                     "type": "boolean",
-                    "description": "Should arguments that contain characters that need to be quoted (example: spaces) be quoted? Defaults to 'true'. If set to false, the debugger command will no longer be automatically quoted.",
+                    "description": "%generateOptionsSchema.pipeTransport.quoteArgs.description%",
                     "default": true
                   },
                   "windows": {
-                    "description": "Windows-specific pipe launch configuration options",
+                    "description": "%generateOptionsSchema.pipeTransport.windows.description%",
                     "default": {
                       "pipeCwd": "${workspaceFolder}",
                       "pipeProgram": "enter the fully qualified path for the pipe program name, for example 'c:\\tools\\plink.exe'",
@@ -2108,19 +2321,19 @@
                     "properties": {
                       "pipeCwd": {
                         "type": "string",
-                        "description": "The fully qualified path to the working directory for the pipe program.",
+                        "description": "%generateOptionsSchema.pipeTransport.windows.pipeCwd.description%",
                         "default": "${workspaceFolder}"
                       },
                       "pipeProgram": {
                         "type": "string",
-                        "description": "The fully qualified pipe command to execute.",
+                        "description": "%generateOptionsSchema.pipeTransport.windows.pipeProgram.description%",
                         "default": "enter the fully qualified path for the pipe program name, for example '/usr/bin/ssh'"
                       },
                       "pipeArgs": {
                         "anyOf": [
                           {
                             "type": "array",
-                            "description": "Command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                            "description": "%generateOptionsSchema.pipeTransport.windows.pipeArgs.0.description%",
                             "items": {
                               "type": "string"
                             },
@@ -2128,7 +2341,7 @@
                           },
                           {
                             "type": "string",
-                            "description": "Stringified version of command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                            "description": "%generateOptionsSchema.pipeTransport.windows.pipeArgs.1.description%",
                             "default": ""
                           }
                         ],
@@ -2136,7 +2349,7 @@
                       },
                       "quoteArgs": {
                         "type": "boolean",
-                        "description": "Should arguments that contain characters that need to be quoted (example: spaces) be quoted? Defaults to 'true'. If set to false, the debugger command will no longer be automatically quoted.",
+                        "description": "%generateOptionsSchema.pipeTransport.windows.quoteArgs.description%",
                         "default": true
                       },
                       "pipeEnv": {
@@ -2144,13 +2357,13 @@
                         "additionalProperties": {
                           "type": "string"
                         },
-                        "description": "Environment variables passed to the pipe program.",
+                        "description": "%generateOptionsSchema.pipeTransport.windows.pipeEnv.description%",
                         "default": {}
                       }
                     }
                   },
                   "osx": {
-                    "description": "OSX-specific pipe launch configuration options",
+                    "description": "%generateOptionsSchema.pipeTransport.osx.description%",
                     "default": {
                       "pipeCwd": "${workspaceFolder}",
                       "pipeProgram": "enter the fully qualified path for the pipe program name, for example '/usr/bin/ssh'",
@@ -2160,19 +2373,19 @@
                     "properties": {
                       "pipeCwd": {
                         "type": "string",
-                        "description": "The fully qualified path to the working directory for the pipe program.",
+                        "description": "%generateOptionsSchema.pipeTransport.osx.pipeCwd.description%",
                         "default": "${workspaceFolder}"
                       },
                       "pipeProgram": {
                         "type": "string",
-                        "description": "The fully qualified pipe command to execute.",
+                        "description": "%generateOptionsSchema.pipeTransport.osx.pipeProgram.description%",
                         "default": "enter the fully qualified path for the pipe program name, for example '/usr/bin/ssh'"
                       },
                       "pipeArgs": {
                         "anyOf": [
                           {
                             "type": "array",
-                            "description": "Command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                            "description": "%generateOptionsSchema.pipeTransport.osx.pipeArgs.0.description%",
                             "items": {
                               "type": "string"
                             },
@@ -2180,7 +2393,7 @@
                           },
                           {
                             "type": "string",
-                            "description": "Stringified version of command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                            "description": "%generateOptionsSchema.pipeTransport.osx.pipeArgs.1.description%",
                             "default": ""
                           }
                         ],
@@ -2188,7 +2401,7 @@
                       },
                       "quoteArgs": {
                         "type": "boolean",
-                        "description": "Should arguments that contain characters that need to be quoted (example: spaces) be quoted? Defaults to 'true'. If set to false, the debugger command will no longer be automatically quoted.",
+                        "description": "%generateOptionsSchema.pipeTransport.osx.quoteArgs.description%",
                         "default": true
                       },
                       "pipeEnv": {
@@ -2196,13 +2409,13 @@
                         "additionalProperties": {
                           "type": "string"
                         },
-                        "description": "Environment variables passed to the pipe program.",
+                        "description": "%generateOptionsSchema.pipeTransport.osx.pipeEnv.description%",
                         "default": {}
                       }
                     }
                   },
                   "linux": {
-                    "description": "Linux-specific pipe launch configuration options",
+                    "description": "%generateOptionsSchema.pipeTransport.linux.description%",
                     "default": {
                       "pipeCwd": "${workspaceFolder}",
                       "pipeProgram": "enter the fully qualified path for the pipe program name, for example '/usr/bin/ssh'",
@@ -2212,19 +2425,19 @@
                     "properties": {
                       "pipeCwd": {
                         "type": "string",
-                        "description": "The fully qualified path to the working directory for the pipe program.",
+                        "description": "%generateOptionsSchema.pipeTransport.linux.pipeCwd.description%",
                         "default": "${workspaceFolder}"
                       },
                       "pipeProgram": {
                         "type": "string",
-                        "description": "The fully qualified pipe command to execute.",
+                        "description": "%generateOptionsSchema.pipeTransport.linux.pipeProgram.description%",
                         "default": "enter the fully qualified path for the pipe program name, for example '/usr/bin/ssh'"
                       },
                       "pipeArgs": {
                         "anyOf": [
                           {
                             "type": "array",
-                            "description": "Command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                            "description": "%generateOptionsSchema.pipeTransport.linux.pipeArgs.0.description%",
                             "items": {
                               "type": "string"
                             },
@@ -2232,7 +2445,7 @@
                           },
                           {
                             "type": "string",
-                            "description": "Stringified version of command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                            "description": "%generateOptionsSchema.pipeTransport.linux.pipeArgs.1.description%",
                             "default": ""
                           }
                         ],
@@ -2240,7 +2453,7 @@
                       },
                       "quoteArgs": {
                         "type": "boolean",
-                        "description": "Should arguments that contain characters that need to be quoted (example: spaces) be quoted? Defaults to 'true'. If set to false, the debugger command will no longer be automatically quoted.",
+                        "description": "%generateOptionsSchema.pipeTransport.linux.quoteArgs.description%",
                         "default": true
                       },
                       "pipeEnv": {
@@ -2248,7 +2461,7 @@
                         "additionalProperties": {
                           "type": "string"
                         },
-                        "description": "Environment variables passed to the pipe program.",
+                        "description": "%generateOptionsSchema.pipeTransport.linux.pipeEnv.description%",
                         "default": {}
                       }
                     }
@@ -2257,11 +2470,11 @@
               },
               "suppressJITOptimizations": {
                 "type": "boolean",
-                "description": "If true, when an optimized module (.dll compiled in the Release configuration) loads in the target process, the debugger will ask the Just-In-Time compiler to generate code with optimizations disabled. For more information: https://aka.ms/VSCode-CS-LaunchJson#suppress-jit-optimizations",
+                "markdownDescription": "%generateOptionsSchema.suppressJITOptimizations.markdownDescription%",
                 "default": false
               },
               "symbolOptions": {
-                "description": "Options to control how symbols (.pdb files) are found and loaded.",
+                "description": "%generateOptionsSchema.symbolOptions.description%",
                 "default": {
                   "searchPaths": [],
                   "searchMicrosoftSymbolServer": false,
@@ -2289,11 +2502,11 @@
                   },
                   "cachePath": {
                     "type": "string",
-                    "description": "Directory where symbols downloaded from symbol servers should be cached. If unspecified, on Windows the debugger will default to %TEMP%\\SymbolCache, and on Linux and macOS the debugger will default to ~/.dotnet/symbolcache.",
-                    "default": "~/.dotnet/symbolcache"
+                    "description": "%generateOptionsSchema.symbolOptions.cachePath.description%",
+                    "default": ""
                   },
                   "moduleFilter": {
-                    "description": "Provides options to control which modules (.dll files) the debugger will attempt to load symbols (.pdb files) for.",
+                    "description": "%generateOptionsSchema.symbolOptions.moduleFilter.description%",
                     "default": {
                       "mode": "loadAllButExcluded",
                       "excludedModules": []
@@ -2310,10 +2523,10 @@
                           "loadOnlyIncluded"
                         ],
                         "enumDescriptions": [
-                          "Load symbols for all modules unless the module is in the 'excludedModules' array.",
-                          "Do not attempt to load symbols for ANY module unless it is in the 'includedModules' array, or it is included through the 'includeSymbolsNextToModules' setting."
+                          "%generateOptionsSchema.symbolOptions.moduleFilter.mode.loadAllButExcluded.enumDescription%",
+                          "%generateOptionsSchema.symbolOptions.moduleFilter.mode.loadOnlyIncluded.enumDescription%"
                         ],
-                        "description": "Controls which of the two basic operating modes the module filter operates in.",
+                        "description": "%generateOptionsSchema.symbolOptions.moduleFilter.mode.description%",
                         "default": "loadAllButExcluded"
                       },
                       "excludedModules": {
@@ -2321,7 +2534,7 @@
                         "items": {
                           "type": "string"
                         },
-                        "description": "Array of modules that the debugger should NOT load symbols for. Wildcards (example: MyCompany.*.dll) are supported.\n\nThis property is ignored unless 'mode' is set to 'loadAllButExcluded'.",
+                        "description": "%generateOptionsSchema.symbolOptions.moduleFilter.excludedModules.description%",
                         "default": []
                       },
                       "includedModules": {
@@ -2329,14 +2542,12 @@
                         "items": {
                           "type": "string"
                         },
-                        "description": "Array of modules that the debugger should load symbols for. Wildcards (example: MyCompany.*.dll) are supported.\n\nThis property is ignored unless 'mode' is set to 'loadOnlyIncluded'.",
-                        "default": [
-                          "MyExampleModule.dll"
-                        ]
+                        "description": "%generateOptionsSchema.symbolOptions.moduleFilter.includedModules.description%",
+                        "default": []
                       },
                       "includeSymbolsNextToModules": {
                         "type": "boolean",
-                        "description": "If true, for any module NOT in the 'includedModules' array, the debugger will still check next to the module itself and the launching executable, but it will not check paths on the symbol search list. This option defaults to 'true'.\n\nThis property is ignored unless 'mode' is set to 'loadOnlyIncluded'.",
+                        "description": "%generateOptionsSchema.symbolOptions.moduleFilter.includeSymbolsNextToModules.description%",
                         "default": true
                       }
                     }
@@ -2344,7 +2555,7 @@
                 }
               },
               "sourceLinkOptions": {
-                "description": "Options to control how Source Link connects to web servers. For more information: https://aka.ms/VSCode-CS-LaunchJson#source-link-options",
+                "markdownDescription": "%generateOptionsSchema.sourceLinkOptions.markdownDescription%",
                 "default": {
                   "*": {
                     "enabled": true
@@ -2356,7 +2567,7 @@
                   "properties": {
                     "enabled": {
                       "title": "boolean",
-                      "description": "Is Source Link enabled for this URL?  If unspecified, this option defaults to 'true'.",
+                      "markdownDescription": "%generateOptionsSchema.sourceLinkOptions.additionalItems.enabled.markdownDescription%",
                       "default": "true"
                     }
                   }
@@ -2364,16 +2575,16 @@
               },
               "allowFastEvaluate": {
                 "type": "boolean",
-                "description": "When true (the default state), the debugger will attempt faster evaluation by simulating execution of simple properties and methods.",
+                "description": "%generateOptionsSchema.allowFastEvaluate.description%",
                 "default": true
               },
               "targetArchitecture": {
                 "type": "string",
+                "markdownDescription": "%generateOptionsSchema.targetArchitecture.markdownDescription%",
                 "enum": [
                   "x86_64",
                   "arm64"
-                ],
-                "description": "The architecture of the debuggee. This will automatically be detected unless this parameter is set. Allowed values are x86_64 or arm64. This value is ignored on Linux."
+                ]
               }
             }
           }
@@ -2462,6 +2673,28 @@
                 "debuggerPath": "^\"${2:enter the path for the debugger on the target machine, for example /usr/bin/netcoredbg}\""
               }
             }
+          },
+          {
+            "label": ".NET: Launch and Debug Hosted Blazor WebAssembly App",
+            "description": "Launches a Hosted Blazor WebAssembly App with a debugger",
+            "body": {
+              "name": "Launch and Debug Hosted Blazor WebAssembly App",
+              "type": "blazorwasm",
+              "request": "launch",
+              "hosted": true,
+              "program": "^\"\\${workspaceFolder}/bin/Debug/${1:<target-framework>}/${2:<project-name.dll>}\"",
+              "cwd": "^\"\\${workspaceFolder}\""
+            }
+          },
+          {
+            "label": ".NET: Launch and Debug Standalone Blazor WebAssembly App",
+            "description": "Launches Standalone Blazor WebAssembly App with a debugger",
+            "body": {
+              "name": "Launch and Debug Standalone Blazor WebAssembly App",
+              "type": "blazorwasm",
+              "request": "launch",
+              "cwd": "^\"\\${workspaceFolder}\""
+            }
           }
         ]
       },
@@ -2489,19 +2722,19 @@
             "properties": {
               "program": {
                 "type": "string",
-                "description": "Path to the application dll or .NET Core host executable to launch.\nThis property normally takes the form: '${workspaceFolder}/bin/Debug/(target-framework)/(project-name.dll)'\nExample: '${workspaceFolder}/bin/Debug/netcoreapp1.1/MyProject.dll'\n\nWhere:\n(target-framework) is the framework that the debugged project is being built for. This is normally found in the project file as the 'TargetFramework' property.\n(project-name.dll) is the name of debugged project's build output dll. This is normally the same as the project file name but with a '.dll' extension.",
+                "markdownDescription": "%generateOptionsSchema.program.markdownDescription%",
                 "default": "${workspaceFolder}/bin/Debug/<insert-target-framework-here>/<insert-project-name-here>.dll"
               },
               "cwd": {
                 "type": "string",
-                "description": "Path to the working directory of the program being debugged. Default is the current workspace.",
+                "description": "%generateOptionsSchema.cwd.description%",
                 "default": "${workspaceFolder}"
               },
               "args": {
                 "anyOf": [
                   {
                     "type": "array",
-                    "description": "Command line arguments passed to the program.",
+                    "description": "%generateOptionsSchema.args.0.description%",
                     "items": {
                       "type": "string"
                     },
@@ -2509,18 +2742,18 @@
                   },
                   {
                     "type": "string",
-                    "description": "Stringified version of command line arguments passed to the program.",
+                    "description": "%generateOptionsSchema.args.1.description%",
                     "default": ""
                   }
                 ]
               },
               "stopAtEntry": {
                 "type": "boolean",
-                "description": "If true, the debugger should stop at the entry point of the target.",
+                "markdownDescription": "%generateOptionsSchema.stopAtEntry.markdownDescription%",
                 "default": false
               },
               "launchBrowser": {
-                "description": "Describes options to launch a web browser as part of launch",
+                "description": "%generateOptionsSchema.launchBrowser.description%",
                 "default": {
                   "enabled": true
                 },
@@ -2531,16 +2764,16 @@
                 "properties": {
                   "enabled": {
                     "type": "boolean",
-                    "description": "Whether web browser launch is enabled",
+                    "description": "%generateOptionsSchema.launchBrowser.enabled.description%",
                     "default": true
                   },
                   "args": {
                     "type": "string",
-                    "description": "The arguments to pass to the command to open the browser. This is used only if the platform-specific element (`osx`, `linux` or `windows`) doesn't specify a value for `args`. Use ${auto-detect-url} to automatically use the address the server is listening to.",
+                    "description": "%generateOptionsSchema.launchBrowser.args.description%",
                     "default": "${auto-detect-url}"
                   },
                   "osx": {
-                    "description": "OSX-specific web launch configuration options. By default, this will start the browser using `open`.",
+                    "description": "%generateOptionsSchema.launchBrowser.osx.description%",
                     "default": {
                       "command": "open",
                       "args": "${auto-detect-url}"
@@ -2552,18 +2785,18 @@
                     "properties": {
                       "command": {
                         "type": "string",
-                        "description": "The executable which will start the web browser",
+                        "description": "%generateOptionsSchema.launchBrowser.osx.command.description%",
                         "default": "open"
                       },
                       "args": {
                         "type": "string",
-                        "description": "The arguments to pass to the command to open the browser. Use ${auto-detect-url} to automatically use the address the server is listening to.",
+                        "description": "%generateOptionsSchema.launchBrowser.osx.args.description%",
                         "default": "${auto-detect-url}"
                       }
                     }
                   },
                   "linux": {
-                    "description": "Linux-specific web launch configuration options. By default, this will start the browser using `xdg-open`.",
+                    "description": "%generateOptionsSchema.launchBrowser.linux.description%",
                     "default": {
                       "command": "xdg-open",
                       "args": "${auto-detect-url}"
@@ -2575,18 +2808,18 @@
                     "properties": {
                       "command": {
                         "type": "string",
-                        "description": "The executable which will start the web browser",
+                        "description": "%generateOptionsSchema.launchBrowser.linux.command.description%",
                         "default": "xdg-open"
                       },
                       "args": {
                         "type": "string",
-                        "description": "The arguments to pass to the command to open the browser. Use ${auto-detect-url} to automatically use the address the server is listening to.",
+                        "description": "%generateOptionsSchema.launchBrowser.linux.args.description%",
                         "default": "${auto-detect-url}"
                       }
                     }
                   },
                   "windows": {
-                    "description": "Windows-specific web launch configuration options. By default, this will start the browser using `cmd /c start`.",
+                    "description": "%generateOptionsSchema.launchBrowser.windows.description%",
                     "default": {
                       "command": "cmd.exe",
                       "args": "/C start ${auto-detect-url}"
@@ -2598,12 +2831,12 @@
                     "properties": {
                       "command": {
                         "type": "string",
-                        "description": "The executable which will start the web browser",
+                        "description": "%generateOptionsSchema.launchBrowser.windows.command.description%",
                         "default": "cmd.exe"
                       },
                       "args": {
                         "type": "string",
-                        "description": "The arguments to pass to the command to open the browser. Use ${auto-detect-url} to automatically use the address the server is listening to.",
+                        "description": "%generateOptionsSchema.launchBrowser.windows.args.description%",
                         "default": "/C start ${auto-detect-url}"
                       }
                     }
@@ -2615,12 +2848,12 @@
                 "additionalProperties": {
                   "type": "string"
                 },
-                "description": "Environment variables passed to the program.",
+                "description": "%generateOptionsSchema.env.description%",
                 "default": {}
               },
               "envFile": {
                 "type": "string",
-                "description": "Environment variables passed to the program by a file.",
+                "markdownDescription": "%generateOptionsSchema.envFile.markdownDescription%",
                 "default": "${workspaceFolder}/.env"
               },
               "console": {
@@ -2631,21 +2864,22 @@
                   "externalTerminal"
                 ],
                 "enumDescriptions": [
-                  "Output to the VS Code Debug Console. This doesn't support reading console input (ex:Console.ReadLine)",
-                  "VS Code's integrated terminal",
-                  "External terminal that can be configured via user settings"
+                  "%generateOptionsSchema.console.internalConsole.enumDescription%",
+                  "%generateOptionsSchema.console.integratedTerminal.enumDescription%",
+                  "%generateOptionsSchema.console.externalTerminal.enumDescription%"
                 ],
-                "description": "Where to launch the debug target.",
+                "markdownDescription": "%generateOptionsSchema.console.markdownDescription%",
+                "settingsDescription": "%generateOptionsSchema.console.settingsDescription%",
                 "default": "internalConsole"
               },
               "externalConsole": {
                 "type": "boolean",
-                "description": "Attribute 'externalConsole' is deprecated, use 'console' instead.",
+                "markdownDescription": "%generateOptionsSchema.externalConsole.markdownDescription%",
                 "default": false
               },
               "launchSettingsFilePath": {
                 "type": "string",
-                "description": "The path to a launchSettings.json file. If this isn't set, the debugger will search in '{cwd}/Properties/launchSettings.json'.",
+                "markdownDescription": "%generateOptionsSchema.launchSettingsFilePath.markdownDescription%",
                 "default": "${workspaceFolder}/Properties/launchSettings.json"
               },
               "launchSettingsProfile": {
@@ -2657,84 +2891,82 @@
                     "type": "null"
                   }
                 ],
-                "description": "If specified, indicates the name of the profile in launchSettings.json to use. This is ignored if launchSettings.json is not found. launchSettings.json will be read from the path specified should be the 'launchSettingsFilePath' property, or {cwd}/Properties/launchSettings.json if that isn't set. If this is set to null or an empty string then launchSettings.json is ignored. If this value is not specified the first 'Project' profile will be used.",
+                "description": "%generateOptionsSchema.launchSettingsProfile.description%",
                 "default": "<insert-profile-name>"
               },
               "sourceFileMap": {
                 "type": "object",
-                "description": "Optional source file mappings passed to the debug engine. Example: '{ \"C:\\foo\":\"/home/user/foo\" }'",
+                "markdownDescription": "%generateOptionsSchema.sourceFileMap.markdownDescription%",
                 "additionalProperties": {
                   "type": "string"
                 },
-                "default": {
-                  "<insert-source-path-here>": "<insert-target-path-here>"
-                }
+                "default": {}
               },
               "justMyCode": {
                 "type": "boolean",
-                "description": "Optional flag to only show user code.",
+                "markdownDescription": "%generateOptionsSchema.justMyCode.markdownDescription%",
                 "default": true
               },
               "requireExactSource": {
                 "type": "boolean",
-                "description": "Optional flag to require current source code to match the pdb.",
+                "markdownDescription": "%generateOptionsSchema.requireExactSource.markdownDescription%",
                 "default": true
               },
               "enableStepFiltering": {
                 "type": "boolean",
-                "description": "Optional flag to enable stepping over Properties and Operators.",
+                "markdownDescription": "%generateOptionsSchema.enableStepFiltering.markdownDescription%",
                 "default": true
               },
               "logging": {
-                "description": "Optional flags to determine what types of messages should be logged to the output window.",
+                "description": "%generateOptionsSchema.logging.description%",
                 "type": "object",
                 "required": [],
                 "default": {},
                 "properties": {
                   "exceptions": {
                     "type": "boolean",
-                    "description": "Optional flag to determine whether exception messages should be logged to the output window.",
+                    "markdownDescription": "%generateOptionsSchema.logging.exceptions.markdownDescription%",
                     "default": true
                   },
                   "moduleLoad": {
                     "type": "boolean",
-                    "description": "Optional flag to determine whether module load events should be logged to the output window.",
+                    "markdownDescription": "%generateOptionsSchema.logging.moduleLoad.markdownDescription%",
                     "default": true
                   },
                   "programOutput": {
                     "type": "boolean",
-                    "description": "Optional flag to determine whether program output should be logged to the output window when not using an external console.",
+                    "markdownDescription": "%generateOptionsSchema.logging.programOutput.markdownDescription%",
                     "default": true
                   },
                   "engineLogging": {
                     "type": "boolean",
-                    "description": "Optional flag to determine whether diagnostic engine logs should be logged to the output window.",
+                    "markdownDescription": "%generateOptionsSchema.logging.engineLogging.markdownDescription%",
                     "default": false
                   },
                   "browserStdOut": {
                     "type": "boolean",
-                    "description": "Optional flag to determine if stdout text from the launching the web browser should be logged to the output window.",
+                    "markdownDescription": "%generateOptionsSchema.logging.browserStdOut.markdownDescription%",
                     "default": true
                   },
                   "elapsedTiming": {
                     "type": "boolean",
-                    "description": "If true, engine logging will include `adapterElapsedTime` and `engineElapsedTime` properties to indicate the amount of time, in microseconds, that a request took.",
+                    "markdownDescription": "%generateOptionsSchema.logging.elapsedTiming.markdownDescription%",
                     "default": false
                   },
                   "threadExit": {
                     "type": "boolean",
-                    "description": "Controls if a message is logged when a thread in the target process exits. Default: `false`.",
+                    "markdownDescription": "%generateOptionsSchema.logging.threadExit.markdownDescription%",
                     "default": false
                   },
                   "processExit": {
                     "type": "boolean",
-                    "description": "Controls if a message is logged when the target process exits, or debugging is stopped. Default: `true`.",
+                    "markdownDescription": "%generateOptionsSchema.logging.processExit.markdownDescription%",
                     "default": true
                   }
                 }
               },
               "pipeTransport": {
-                "description": "When present, this tells the debugger to connect to a remote computer using another executable as a pipe that will relay standard input/output between VS Code and the .NET Core debugger backend executable (netcoredbg).",
+                "description": "When present, this tells the debugger to connect to a remote computer using another executable as a pipe that will relay standard input/output between VS Code and the .NET Core debugger backend executable (vsdbg).",
                 "type": "object",
                 "required": [
                   "debuggerPath"
@@ -2748,19 +2980,19 @@
                 "properties": {
                   "pipeCwd": {
                     "type": "string",
-                    "description": "The fully qualified path to the working directory for the pipe program.",
+                    "description": "%generateOptionsSchema.pipeTransport.pipeCwd.description%",
                     "default": "${workspaceFolder}"
                   },
                   "pipeProgram": {
                     "type": "string",
-                    "description": "The fully qualified pipe command to execute.",
+                    "description": "%generateOptionsSchema.pipeTransport.pipeProgram.description%",
                     "default": "enter the fully qualified path for the pipe program name, for example '/usr/bin/ssh'"
                   },
                   "pipeArgs": {
                     "anyOf": [
                       {
                         "type": "array",
-                        "description": "Command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                        "description": "%generateOptionsSchema.pipeTransport.pipeArgs.0.description%",
                         "items": {
                           "type": "string"
                         },
@@ -2768,7 +3000,7 @@
                       },
                       {
                         "type": "string",
-                        "description": "Stringified version of command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                        "description": "%generateOptionsSchema.pipeTransport.pipeArgs.1.description%",
                         "default": ""
                       }
                     ],
@@ -2777,23 +3009,23 @@
                   "debuggerPath": {
                     "type": "string",
                     "description": "The full path to the debugger on the target machine.",
-                    "default": "enter the path for the debugger on the target machine, for example /usr/bin/netcoredbg"
+                    "default": "enter the path for the debugger on the target machine, for example ~/vsdbg/vsdbg"
                   },
                   "pipeEnv": {
                     "type": "object",
                     "additionalProperties": {
                       "type": "string"
                     },
-                    "description": "Environment variables passed to the pipe program.",
+                    "description": "%generateOptionsSchema.pipeTransport.pipeEnv.description%",
                     "default": {}
                   },
                   "quoteArgs": {
                     "type": "boolean",
-                    "description": "Should arguments that contain characters that need to be quoted (example: spaces) be quoted? Defaults to 'true'. If set to false, the debugger command will no longer be automatically quoted.",
+                    "description": "%generateOptionsSchema.pipeTransport.quoteArgs.description%",
                     "default": true
                   },
                   "windows": {
-                    "description": "Windows-specific pipe launch configuration options",
+                    "description": "%generateOptionsSchema.pipeTransport.windows.description%",
                     "default": {
                       "pipeCwd": "${workspaceFolder}",
                       "pipeProgram": "enter the fully qualified path for the pipe program name, for example 'c:\\tools\\plink.exe'",
@@ -2803,19 +3035,19 @@
                     "properties": {
                       "pipeCwd": {
                         "type": "string",
-                        "description": "The fully qualified path to the working directory for the pipe program.",
+                        "description": "%generateOptionsSchema.pipeTransport.windows.pipeCwd.description%",
                         "default": "${workspaceFolder}"
                       },
                       "pipeProgram": {
                         "type": "string",
-                        "description": "The fully qualified pipe command to execute.",
+                        "description": "%generateOptionsSchema.pipeTransport.windows.pipeProgram.description%",
                         "default": "enter the fully qualified path for the pipe program name, for example '/usr/bin/ssh'"
                       },
                       "pipeArgs": {
                         "anyOf": [
                           {
                             "type": "array",
-                            "description": "Command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                            "description": "%generateOptionsSchema.pipeTransport.windows.pipeArgs.0.description%",
                             "items": {
                               "type": "string"
                             },
@@ -2823,7 +3055,7 @@
                           },
                           {
                             "type": "string",
-                            "description": "Stringified version of command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                            "description": "%generateOptionsSchema.pipeTransport.windows.pipeArgs.1.description%",
                             "default": ""
                           }
                         ],
@@ -2831,7 +3063,7 @@
                       },
                       "quoteArgs": {
                         "type": "boolean",
-                        "description": "Should arguments that contain characters that need to be quoted (example: spaces) be quoted? Defaults to 'true'. If set to false, the debugger command will no longer be automatically quoted.",
+                        "description": "%generateOptionsSchema.pipeTransport.windows.quoteArgs.description%",
                         "default": true
                       },
                       "pipeEnv": {
@@ -2839,13 +3071,13 @@
                         "additionalProperties": {
                           "type": "string"
                         },
-                        "description": "Environment variables passed to the pipe program.",
+                        "description": "%generateOptionsSchema.pipeTransport.windows.pipeEnv.description%",
                         "default": {}
                       }
                     }
                   },
                   "osx": {
-                    "description": "OSX-specific pipe launch configuration options",
+                    "description": "%generateOptionsSchema.pipeTransport.osx.description%",
                     "default": {
                       "pipeCwd": "${workspaceFolder}",
                       "pipeProgram": "enter the fully qualified path for the pipe program name, for example '/usr/bin/ssh'",
@@ -2855,19 +3087,19 @@
                     "properties": {
                       "pipeCwd": {
                         "type": "string",
-                        "description": "The fully qualified path to the working directory for the pipe program.",
+                        "description": "%generateOptionsSchema.pipeTransport.osx.pipeCwd.description%",
                         "default": "${workspaceFolder}"
                       },
                       "pipeProgram": {
                         "type": "string",
-                        "description": "The fully qualified pipe command to execute.",
+                        "description": "%generateOptionsSchema.pipeTransport.osx.pipeProgram.description%",
                         "default": "enter the fully qualified path for the pipe program name, for example '/usr/bin/ssh'"
                       },
                       "pipeArgs": {
                         "anyOf": [
                           {
                             "type": "array",
-                            "description": "Command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                            "description": "%generateOptionsSchema.pipeTransport.osx.pipeArgs.0.description%",
                             "items": {
                               "type": "string"
                             },
@@ -2875,7 +3107,7 @@
                           },
                           {
                             "type": "string",
-                            "description": "Stringified version of command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                            "description": "%generateOptionsSchema.pipeTransport.osx.pipeArgs.1.description%",
                             "default": ""
                           }
                         ],
@@ -2883,7 +3115,7 @@
                       },
                       "quoteArgs": {
                         "type": "boolean",
-                        "description": "Should arguments that contain characters that need to be quoted (example: spaces) be quoted? Defaults to 'true'. If set to false, the debugger command will no longer be automatically quoted.",
+                        "description": "%generateOptionsSchema.pipeTransport.osx.quoteArgs.description%",
                         "default": true
                       },
                       "pipeEnv": {
@@ -2891,13 +3123,13 @@
                         "additionalProperties": {
                           "type": "string"
                         },
-                        "description": "Environment variables passed to the pipe program.",
+                        "description": "%generateOptionsSchema.pipeTransport.osx.pipeEnv.description%",
                         "default": {}
                       }
                     }
                   },
                   "linux": {
-                    "description": "Linux-specific pipe launch configuration options",
+                    "description": "%generateOptionsSchema.pipeTransport.linux.description%",
                     "default": {
                       "pipeCwd": "${workspaceFolder}",
                       "pipeProgram": "enter the fully qualified path for the pipe program name, for example '/usr/bin/ssh'",
@@ -2907,19 +3139,19 @@
                     "properties": {
                       "pipeCwd": {
                         "type": "string",
-                        "description": "The fully qualified path to the working directory for the pipe program.",
+                        "description": "%generateOptionsSchema.pipeTransport.linux.pipeCwd.description%",
                         "default": "${workspaceFolder}"
                       },
                       "pipeProgram": {
                         "type": "string",
-                        "description": "The fully qualified pipe command to execute.",
+                        "description": "%generateOptionsSchema.pipeTransport.linux.pipeProgram.description%",
                         "default": "enter the fully qualified path for the pipe program name, for example '/usr/bin/ssh'"
                       },
                       "pipeArgs": {
                         "anyOf": [
                           {
                             "type": "array",
-                            "description": "Command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                            "description": "%generateOptionsSchema.pipeTransport.linux.pipeArgs.0.description%",
                             "items": {
                               "type": "string"
                             },
@@ -2927,7 +3159,7 @@
                           },
                           {
                             "type": "string",
-                            "description": "Stringified version of command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                            "description": "%generateOptionsSchema.pipeTransport.linux.pipeArgs.1.description%",
                             "default": ""
                           }
                         ],
@@ -2935,7 +3167,7 @@
                       },
                       "quoteArgs": {
                         "type": "boolean",
-                        "description": "Should arguments that contain characters that need to be quoted (example: spaces) be quoted? Defaults to 'true'. If set to false, the debugger command will no longer be automatically quoted.",
+                        "description": "%generateOptionsSchema.pipeTransport.linux.quoteArgs.description%",
                         "default": true
                       },
                       "pipeEnv": {
@@ -2943,7 +3175,7 @@
                         "additionalProperties": {
                           "type": "string"
                         },
-                        "description": "Environment variables passed to the pipe program.",
+                        "description": "%generateOptionsSchema.pipeTransport.linux.pipeEnv.description%",
                         "default": {}
                       }
                     }
@@ -2952,11 +3184,11 @@
               },
               "suppressJITOptimizations": {
                 "type": "boolean",
-                "description": "If true, when an optimized module (.dll compiled in the Release configuration) loads in the target process, the debugger will ask the Just-In-Time compiler to generate code with optimizations disabled. For more information: https://aka.ms/VSCode-CS-LaunchJson#suppress-jit-optimizations",
+                "markdownDescription": "%generateOptionsSchema.suppressJITOptimizations.markdownDescription%",
                 "default": false
               },
               "symbolOptions": {
-                "description": "Options to control how symbols (.pdb files) are found and loaded.",
+                "description": "%generateOptionsSchema.symbolOptions.description%",
                 "default": {
                   "searchPaths": [],
                   "searchMicrosoftSymbolServer": false,
@@ -2984,11 +3216,11 @@
                   },
                   "cachePath": {
                     "type": "string",
-                    "description": "Directory where symbols downloaded from symbol servers should be cached. If unspecified, on Windows the debugger will default to %TEMP%\\SymbolCache, and on Linux and macOS the debugger will default to ~/.dotnet/symbolcache.",
-                    "default": "~/.dotnet/symbolcache"
+                    "description": "%generateOptionsSchema.symbolOptions.cachePath.description%",
+                    "default": ""
                   },
                   "moduleFilter": {
-                    "description": "Provides options to control which modules (.dll files) the debugger will attempt to load symbols (.pdb files) for.",
+                    "description": "%generateOptionsSchema.symbolOptions.moduleFilter.description%",
                     "default": {
                       "mode": "loadAllButExcluded",
                       "excludedModules": []
@@ -3005,10 +3237,10 @@
                           "loadOnlyIncluded"
                         ],
                         "enumDescriptions": [
-                          "Load symbols for all modules unless the module is in the 'excludedModules' array.",
-                          "Do not attempt to load symbols for ANY module unless it is in the 'includedModules' array, or it is included through the 'includeSymbolsNextToModules' setting."
+                          "%generateOptionsSchema.symbolOptions.moduleFilter.mode.loadAllButExcluded.enumDescription%",
+                          "%generateOptionsSchema.symbolOptions.moduleFilter.mode.loadOnlyIncluded.enumDescription%"
                         ],
-                        "description": "Controls which of the two basic operating modes the module filter operates in.",
+                        "description": "%generateOptionsSchema.symbolOptions.moduleFilter.mode.description%",
                         "default": "loadAllButExcluded"
                       },
                       "excludedModules": {
@@ -3016,7 +3248,7 @@
                         "items": {
                           "type": "string"
                         },
-                        "description": "Array of modules that the debugger should NOT load symbols for. Wildcards (example: MyCompany.*.dll) are supported.\n\nThis property is ignored unless 'mode' is set to 'loadAllButExcluded'.",
+                        "description": "%generateOptionsSchema.symbolOptions.moduleFilter.excludedModules.description%",
                         "default": []
                       },
                       "includedModules": {
@@ -3024,14 +3256,12 @@
                         "items": {
                           "type": "string"
                         },
-                        "description": "Array of modules that the debugger should load symbols for. Wildcards (example: MyCompany.*.dll) are supported.\n\nThis property is ignored unless 'mode' is set to 'loadOnlyIncluded'.",
-                        "default": [
-                          "MyExampleModule.dll"
-                        ]
+                        "description": "%generateOptionsSchema.symbolOptions.moduleFilter.includedModules.description%",
+                        "default": []
                       },
                       "includeSymbolsNextToModules": {
                         "type": "boolean",
-                        "description": "If true, for any module NOT in the 'includedModules' array, the debugger will still check next to the module itself and the launching executable, but it will not check paths on the symbol search list. This option defaults to 'true'.\n\nThis property is ignored unless 'mode' is set to 'loadOnlyIncluded'.",
+                        "description": "%generateOptionsSchema.symbolOptions.moduleFilter.includeSymbolsNextToModules.description%",
                         "default": true
                       }
                     }
@@ -3039,7 +3269,7 @@
                 }
               },
               "sourceLinkOptions": {
-                "description": "Options to control how Source Link connects to web servers. For more information: https://aka.ms/VSCode-CS-LaunchJson#source-link-options",
+                "markdownDescription": "%generateOptionsSchema.sourceLinkOptions.markdownDescription%",
                 "default": {
                   "*": {
                     "enabled": true
@@ -3051,7 +3281,7 @@
                   "properties": {
                     "enabled": {
                       "title": "boolean",
-                      "description": "Is Source Link enabled for this URL?  If unspecified, this option defaults to 'true'.",
+                      "markdownDescription": "%generateOptionsSchema.sourceLinkOptions.additionalItems.enabled.markdownDescription%",
                       "default": "true"
                     }
                   }
@@ -3059,25 +3289,25 @@
               },
               "allowFastEvaluate": {
                 "type": "boolean",
-                "description": "When true (the default state), the debugger will attempt faster evaluation by simulating execution of simple properties and methods.",
+                "description": "%generateOptionsSchema.allowFastEvaluate.description%",
                 "default": true
               },
               "targetOutputLogPath": {
                 "type": "string",
-                "description": "When set, text that the target application writes to stdout and stderr (ex: Console.WriteLine) will be saved to the specified file. This option is ignored if console is set to something other than internalConsole.",
-                "default": "${workspaceFolder}/out.txt"
+                "description": "%generateOptionsSchema.targetOutputLogPath.description%",
+                "default": ""
               },
               "targetArchitecture": {
                 "type": "string",
+                "markdownDescription": "%generateOptionsSchema.targetArchitecture.markdownDescription%",
                 "enum": [
                   "x86_64",
                   "arm64"
-                ],
-                "description": "The architecture of the debuggee. This will automatically be detected unless this parameter is set. Allowed values are x86_64 or arm64. This value is ignored on Linux."
+                ]
               },
               "checkForDevCert": {
                 "type": "boolean",
-                "description": "When true, the debugger will check if the computer has a self-signed HTTPS certificate used to develop web servers running on https endpoints. If unspecified, defaults to true when `serverReadyAction` is set. This option does nothing on Linux, VS Code remote, and VS Code Web UI scenarios. If the HTTPS certificate is not found or isn't trusted, the user will be prompted to install/trust it.",
+                "description": "%generateOptionsSchema.checkForDevCert.description%",
                 "default": true
               }
             }
@@ -3088,98 +3318,95 @@
             "properties": {
               "processName": {
                 "type": "string",
-                "description": "",
-                "default": "The process name to attach to. If this is used, 'processId' should not be used."
+                "default": "",
+                "markdownDescription": "%generateOptionsSchema.processName.markdownDescription%"
               },
               "processId": {
                 "anyOf": [
                   {
                     "type": "string",
-                    "description": "The process id to attach to. Use \"\" to get a list of running processes to attach to. If 'processId' used, 'processName' should not be used.",
+                    "markdownDescription": "%generateOptionsSchema.processId.0.markdownDescription%",
                     "default": ""
                   },
                   {
                     "type": "integer",
-                    "description": "The process id to attach to. Use \"\" to get a list of running processes to attach to. If 'processId' used, 'processName' should not be used.",
+                    "markdownDescription": "%generateOptionsSchema.processId.1.markdownDescription%",
                     "default": 0
                   }
                 ]
               },
               "sourceFileMap": {
                 "type": "object",
-                "description": "Optional source file mappings passed to the debug engine. Example: '{ \"C:\\foo\":\"/home/user/foo\" }'",
+                "markdownDescription": "%generateOptionsSchema.sourceFileMap.markdownDescription%",
                 "additionalProperties": {
                   "type": "string"
-                },
-                "default": {
-                  "<insert-source-path-here>": "<insert-target-path-here>"
                 }
               },
               "justMyCode": {
                 "type": "boolean",
-                "description": "Optional flag to only show user code.",
+                "markdownDescription": "%generateOptionsSchema.justMyCode.markdownDescription%",
                 "default": true
               },
               "requireExactSource": {
                 "type": "boolean",
-                "description": "Optional flag to require current source code to match the pdb.",
+                "markdownDescription": "%generateOptionsSchema.requireExactSource.markdownDescription%",
                 "default": true
               },
               "enableStepFiltering": {
                 "type": "boolean",
-                "description": "Optional flag to enable stepping over Properties and Operators.",
+                "markdownDescription": "%generateOptionsSchema.enableStepFiltering.markdownDescription%",
                 "default": true
               },
               "logging": {
-                "description": "Optional flags to determine what types of messages should be logged to the output window.",
+                "description": "%generateOptionsSchema.logging.description%",
                 "type": "object",
                 "required": [],
                 "default": {},
                 "properties": {
                   "exceptions": {
                     "type": "boolean",
-                    "description": "Optional flag to determine whether exception messages should be logged to the output window.",
+                    "markdownDescription": "%generateOptionsSchema.logging.exceptions.markdownDescription%",
                     "default": true
                   },
                   "moduleLoad": {
                     "type": "boolean",
-                    "description": "Optional flag to determine whether module load events should be logged to the output window.",
+                    "markdownDescription": "%generateOptionsSchema.logging.moduleLoad.markdownDescription%",
                     "default": true
                   },
                   "programOutput": {
                     "type": "boolean",
-                    "description": "Optional flag to determine whether program output should be logged to the output window when not using an external console.",
+                    "markdownDescription": "%generateOptionsSchema.logging.programOutput.markdownDescription%",
                     "default": true
                   },
                   "engineLogging": {
                     "type": "boolean",
-                    "description": "Optional flag to determine whether diagnostic engine logs should be logged to the output window.",
+                    "markdownDescription": "%generateOptionsSchema.logging.engineLogging.markdownDescription%",
                     "default": false
                   },
                   "browserStdOut": {
                     "type": "boolean",
-                    "description": "Optional flag to determine if stdout text from the launching the web browser should be logged to the output window.",
+                    "markdownDescription": "%generateOptionsSchema.logging.browserStdOut.markdownDescription%",
                     "default": true
                   },
                   "elapsedTiming": {
                     "type": "boolean",
-                    "description": "If true, engine logging will include `adapterElapsedTime` and `engineElapsedTime` properties to indicate the amount of time, in microseconds, that a request took.",
+                    "markdownDescription": "%generateOptionsSchema.logging.elapsedTiming.markdownDescription%",
                     "default": false
                   },
                   "threadExit": {
                     "type": "boolean",
-                    "description": "Controls if a message is logged when a thread in the target process exits. Default: `false`.",
+                    "markdownDescription": "%generateOptionsSchema.logging.threadExit.markdownDescription%",
                     "default": false
                   },
                   "processExit": {
                     "type": "boolean",
-                    "description": "Controls if a message is logged when the target process exits, or debugging is stopped. Default: `true`.",
+                    "markdownDescription": "%generateOptionsSchema.logging.processExit.markdownDescription%",
                     "default": true
                   }
                 }
               },
               "pipeTransport": {
-                "description": "When present, this tells the debugger to connect to a remote computer using another executable as a pipe that will relay standard input/output between VS Code and the .NET Core debugger backend executable (netcoredbg).",
+                "description": "When present, this tells the debugger to connect to a remote computer using another executable as a pipe that will relay standard input/output between VS Code and the .NET Core debugger backend executable (vsdbg).",
                 "type": "object",
                 "required": [
                   "debuggerPath"
@@ -3193,19 +3420,19 @@
                 "properties": {
                   "pipeCwd": {
                     "type": "string",
-                    "description": "The fully qualified path to the working directory for the pipe program.",
+                    "description": "%generateOptionsSchema.pipeTransport.pipeCwd.description%",
                     "default": "${workspaceFolder}"
                   },
                   "pipeProgram": {
                     "type": "string",
-                    "description": "The fully qualified pipe command to execute.",
+                    "description": "%generateOptionsSchema.pipeTransport.pipeProgram.description%",
                     "default": "enter the fully qualified path for the pipe program name, for example '/usr/bin/ssh'"
                   },
                   "pipeArgs": {
                     "anyOf": [
                       {
                         "type": "array",
-                        "description": "Command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                        "description": "%generateOptionsSchema.pipeTransport.pipeArgs.0.description%",
                         "items": {
                           "type": "string"
                         },
@@ -3213,7 +3440,7 @@
                       },
                       {
                         "type": "string",
-                        "description": "Stringified version of command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                        "description": "%generateOptionsSchema.pipeTransport.pipeArgs.1.description%",
                         "default": ""
                       }
                     ],
@@ -3222,23 +3449,23 @@
                   "debuggerPath": {
                     "type": "string",
                     "description": "The full path to the debugger on the target machine.",
-                    "default": "enter the path for the debugger on the target machine, for example /usr/bin/netcoredbg"
+                    "default": "enter the path for the debugger on the target machine, for example ~/vsdbg/vsdbg"
                   },
                   "pipeEnv": {
                     "type": "object",
                     "additionalProperties": {
                       "type": "string"
                     },
-                    "description": "Environment variables passed to the pipe program.",
+                    "description": "%generateOptionsSchema.pipeTransport.pipeEnv.description%",
                     "default": {}
                   },
                   "quoteArgs": {
                     "type": "boolean",
-                    "description": "Should arguments that contain characters that need to be quoted (example: spaces) be quoted? Defaults to 'true'. If set to false, the debugger command will no longer be automatically quoted.",
+                    "description": "%generateOptionsSchema.pipeTransport.quoteArgs.description%",
                     "default": true
                   },
                   "windows": {
-                    "description": "Windows-specific pipe launch configuration options",
+                    "description": "%generateOptionsSchema.pipeTransport.windows.description%",
                     "default": {
                       "pipeCwd": "${workspaceFolder}",
                       "pipeProgram": "enter the fully qualified path for the pipe program name, for example 'c:\\tools\\plink.exe'",
@@ -3248,19 +3475,19 @@
                     "properties": {
                       "pipeCwd": {
                         "type": "string",
-                        "description": "The fully qualified path to the working directory for the pipe program.",
+                        "description": "%generateOptionsSchema.pipeTransport.windows.pipeCwd.description%",
                         "default": "${workspaceFolder}"
                       },
                       "pipeProgram": {
                         "type": "string",
-                        "description": "The fully qualified pipe command to execute.",
+                        "description": "%generateOptionsSchema.pipeTransport.windows.pipeProgram.description%",
                         "default": "enter the fully qualified path for the pipe program name, for example '/usr/bin/ssh'"
                       },
                       "pipeArgs": {
                         "anyOf": [
                           {
                             "type": "array",
-                            "description": "Command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                            "description": "%generateOptionsSchema.pipeTransport.windows.pipeArgs.0.description%",
                             "items": {
                               "type": "string"
                             },
@@ -3268,7 +3495,7 @@
                           },
                           {
                             "type": "string",
-                            "description": "Stringified version of command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                            "description": "%generateOptionsSchema.pipeTransport.windows.pipeArgs.1.description%",
                             "default": ""
                           }
                         ],
@@ -3276,7 +3503,7 @@
                       },
                       "quoteArgs": {
                         "type": "boolean",
-                        "description": "Should arguments that contain characters that need to be quoted (example: spaces) be quoted? Defaults to 'true'. If set to false, the debugger command will no longer be automatically quoted.",
+                        "description": "%generateOptionsSchema.pipeTransport.windows.quoteArgs.description%",
                         "default": true
                       },
                       "pipeEnv": {
@@ -3284,13 +3511,13 @@
                         "additionalProperties": {
                           "type": "string"
                         },
-                        "description": "Environment variables passed to the pipe program.",
+                        "description": "%generateOptionsSchema.pipeTransport.windows.pipeEnv.description%",
                         "default": {}
                       }
                     }
                   },
                   "osx": {
-                    "description": "OSX-specific pipe launch configuration options",
+                    "description": "%generateOptionsSchema.pipeTransport.osx.description%",
                     "default": {
                       "pipeCwd": "${workspaceFolder}",
                       "pipeProgram": "enter the fully qualified path for the pipe program name, for example '/usr/bin/ssh'",
@@ -3300,19 +3527,19 @@
                     "properties": {
                       "pipeCwd": {
                         "type": "string",
-                        "description": "The fully qualified path to the working directory for the pipe program.",
+                        "description": "%generateOptionsSchema.pipeTransport.osx.pipeCwd.description%",
                         "default": "${workspaceFolder}"
                       },
                       "pipeProgram": {
                         "type": "string",
-                        "description": "The fully qualified pipe command to execute.",
+                        "description": "%generateOptionsSchema.pipeTransport.osx.pipeProgram.description%",
                         "default": "enter the fully qualified path for the pipe program name, for example '/usr/bin/ssh'"
                       },
                       "pipeArgs": {
                         "anyOf": [
                           {
                             "type": "array",
-                            "description": "Command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                            "description": "%generateOptionsSchema.pipeTransport.osx.pipeArgs.0.description%",
                             "items": {
                               "type": "string"
                             },
@@ -3320,7 +3547,7 @@
                           },
                           {
                             "type": "string",
-                            "description": "Stringified version of command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                            "description": "%generateOptionsSchema.pipeTransport.osx.pipeArgs.1.description%",
                             "default": ""
                           }
                         ],
@@ -3328,7 +3555,7 @@
                       },
                       "quoteArgs": {
                         "type": "boolean",
-                        "description": "Should arguments that contain characters that need to be quoted (example: spaces) be quoted? Defaults to 'true'. If set to false, the debugger command will no longer be automatically quoted.",
+                        "description": "%generateOptionsSchema.pipeTransport.osx.quoteArgs.description%",
                         "default": true
                       },
                       "pipeEnv": {
@@ -3336,13 +3563,13 @@
                         "additionalProperties": {
                           "type": "string"
                         },
-                        "description": "Environment variables passed to the pipe program.",
+                        "description": "%generateOptionsSchema.pipeTransport.osx.pipeEnv.description%",
                         "default": {}
                       }
                     }
                   },
                   "linux": {
-                    "description": "Linux-specific pipe launch configuration options",
+                    "description": "%generateOptionsSchema.pipeTransport.linux.description%",
                     "default": {
                       "pipeCwd": "${workspaceFolder}",
                       "pipeProgram": "enter the fully qualified path for the pipe program name, for example '/usr/bin/ssh'",
@@ -3352,19 +3579,19 @@
                     "properties": {
                       "pipeCwd": {
                         "type": "string",
-                        "description": "The fully qualified path to the working directory for the pipe program.",
+                        "description": "%generateOptionsSchema.pipeTransport.linux.pipeCwd.description%",
                         "default": "${workspaceFolder}"
                       },
                       "pipeProgram": {
                         "type": "string",
-                        "description": "The fully qualified pipe command to execute.",
+                        "description": "%generateOptionsSchema.pipeTransport.linux.pipeProgram.description%",
                         "default": "enter the fully qualified path for the pipe program name, for example '/usr/bin/ssh'"
                       },
                       "pipeArgs": {
                         "anyOf": [
                           {
                             "type": "array",
-                            "description": "Command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                            "description": "%generateOptionsSchema.pipeTransport.linux.pipeArgs.0.description%",
                             "items": {
                               "type": "string"
                             },
@@ -3372,7 +3599,7 @@
                           },
                           {
                             "type": "string",
-                            "description": "Stringified version of command line arguments passed to the pipe program. Token ${debuggerCommand} in pipeArgs will get replaced by the full debugger command, this token can be specified inline with other arguments. If ${debuggerCommand} isn't used in any argument, the full debugger command will be instead be added to the end of the argument list.",
+                            "description": "%generateOptionsSchema.pipeTransport.linux.pipeArgs.1.description%",
                             "default": ""
                           }
                         ],
@@ -3380,7 +3607,7 @@
                       },
                       "quoteArgs": {
                         "type": "boolean",
-                        "description": "Should arguments that contain characters that need to be quoted (example: spaces) be quoted? Defaults to 'true'. If set to false, the debugger command will no longer be automatically quoted.",
+                        "description": "%generateOptionsSchema.pipeTransport.linux.quoteArgs.description%",
                         "default": true
                       },
                       "pipeEnv": {
@@ -3388,7 +3615,7 @@
                         "additionalProperties": {
                           "type": "string"
                         },
-                        "description": "Environment variables passed to the pipe program.",
+                        "description": "%generateOptionsSchema.pipeTransport.linux.pipeEnv.description%",
                         "default": {}
                       }
                     }
@@ -3397,11 +3624,11 @@
               },
               "suppressJITOptimizations": {
                 "type": "boolean",
-                "description": "If true, when an optimized module (.dll compiled in the Release configuration) loads in the target process, the debugger will ask the Just-In-Time compiler to generate code with optimizations disabled. For more information: https://aka.ms/VSCode-CS-LaunchJson#suppress-jit-optimizations",
+                "markdownDescription": "%generateOptionsSchema.suppressJITOptimizations.markdownDescription%",
                 "default": false
               },
               "symbolOptions": {
-                "description": "Options to control how symbols (.pdb files) are found and loaded.",
+                "description": "%generateOptionsSchema.symbolOptions.description%",
                 "default": {
                   "searchPaths": [],
                   "searchMicrosoftSymbolServer": false,
@@ -3429,11 +3656,11 @@
                   },
                   "cachePath": {
                     "type": "string",
-                    "description": "Directory where symbols downloaded from symbol servers should be cached. If unspecified, on Windows the debugger will default to %TEMP%\\SymbolCache, and on Linux and macOS the debugger will default to ~/.dotnet/symbolcache.",
-                    "default": "~/.dotnet/symbolcache"
+                    "description": "%generateOptionsSchema.symbolOptions.cachePath.description%",
+                    "default": ""
                   },
                   "moduleFilter": {
-                    "description": "Provides options to control which modules (.dll files) the debugger will attempt to load symbols (.pdb files) for.",
+                    "description": "%generateOptionsSchema.symbolOptions.moduleFilter.description%",
                     "default": {
                       "mode": "loadAllButExcluded",
                       "excludedModules": []
@@ -3450,10 +3677,10 @@
                           "loadOnlyIncluded"
                         ],
                         "enumDescriptions": [
-                          "Load symbols for all modules unless the module is in the 'excludedModules' array.",
-                          "Do not attempt to load symbols for ANY module unless it is in the 'includedModules' array, or it is included through the 'includeSymbolsNextToModules' setting."
+                          "%generateOptionsSchema.symbolOptions.moduleFilter.mode.loadAllButExcluded.enumDescription%",
+                          "%generateOptionsSchema.symbolOptions.moduleFilter.mode.loadOnlyIncluded.enumDescription%"
                         ],
-                        "description": "Controls which of the two basic operating modes the module filter operates in.",
+                        "description": "%generateOptionsSchema.symbolOptions.moduleFilter.mode.description%",
                         "default": "loadAllButExcluded"
                       },
                       "excludedModules": {
@@ -3461,7 +3688,7 @@
                         "items": {
                           "type": "string"
                         },
-                        "description": "Array of modules that the debugger should NOT load symbols for. Wildcards (example: MyCompany.*.dll) are supported.\n\nThis property is ignored unless 'mode' is set to 'loadAllButExcluded'.",
+                        "description": "%generateOptionsSchema.symbolOptions.moduleFilter.excludedModules.description%",
                         "default": []
                       },
                       "includedModules": {
@@ -3469,14 +3696,12 @@
                         "items": {
                           "type": "string"
                         },
-                        "description": "Array of modules that the debugger should load symbols for. Wildcards (example: MyCompany.*.dll) are supported.\n\nThis property is ignored unless 'mode' is set to 'loadOnlyIncluded'.",
-                        "default": [
-                          "MyExampleModule.dll"
-                        ]
+                        "description": "%generateOptionsSchema.symbolOptions.moduleFilter.includedModules.description%",
+                        "default": []
                       },
                       "includeSymbolsNextToModules": {
                         "type": "boolean",
-                        "description": "If true, for any module NOT in the 'includedModules' array, the debugger will still check next to the module itself and the launching executable, but it will not check paths on the symbol search list. This option defaults to 'true'.\n\nThis property is ignored unless 'mode' is set to 'loadOnlyIncluded'.",
+                        "description": "%generateOptionsSchema.symbolOptions.moduleFilter.includeSymbolsNextToModules.description%",
                         "default": true
                       }
                     }
@@ -3484,7 +3709,7 @@
                 }
               },
               "sourceLinkOptions": {
-                "description": "Options to control how Source Link connects to web servers. For more information: https://aka.ms/VSCode-CS-LaunchJson#source-link-options",
+                "markdownDescription": "%generateOptionsSchema.sourceLinkOptions.markdownDescription%",
                 "default": {
                   "*": {
                     "enabled": true
@@ -3496,7 +3721,7 @@
                   "properties": {
                     "enabled": {
                       "title": "boolean",
-                      "description": "Is Source Link enabled for this URL?  If unspecified, this option defaults to 'true'.",
+                      "markdownDescription": "%generateOptionsSchema.sourceLinkOptions.additionalItems.enabled.markdownDescription%",
                       "default": "true"
                     }
                   }
@@ -3504,16 +3729,16 @@
               },
               "allowFastEvaluate": {
                 "type": "boolean",
-                "description": "When true (the default state), the debugger will attempt faster evaluation by simulating execution of simple properties and methods.",
+                "description": "%generateOptionsSchema.allowFastEvaluate.description%",
                 "default": true
               },
               "targetArchitecture": {
                 "type": "string",
+                "markdownDescription": "%generateOptionsSchema.targetArchitecture.markdownDescription%",
                 "enum": [
                   "x86_64",
                   "arm64"
-                ],
-                "description": "The architecture of the debuggee. This will automatically be detected unless this parameter is set. Allowed values are x86_64 or arm64. This value is ignored on Linux."
+                ]
               }
             }
           }
@@ -3722,6 +3947,37 @@
             }
           }
         }
+      },
+      {
+        "type": "dotnet",
+        "label": "C#",
+        "languages": [
+          "csharp",
+          "razor",
+          "aspnetcorerazor"
+        ],
+        "variables": {},
+        "aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217",
+        "configurationAttributes": {
+          "launch": {
+            "type": "object",
+            "required": [
+              "projectPath"
+            ],
+            "properties": {
+              "projectPath": {
+                "type": "string",
+                "description": "%debuggers.dotnet.launch.projectPath.description%",
+                "default": "${workspaceFolder}/<insert-project-name-here>.csproj"
+              },
+              "launchConfigurationId": {
+                "type": "string",
+                "description": "%debuggers.dotnet.launch.launchConfigurationId.description%"
+              }
+            }
+          }
+        },
+        "configurationSnippets": []
       }
     ],
     "semanticTokenTypes": [
@@ -3790,132 +4046,242 @@
         "description": "The begining or ending punctuation of a Markup comment."
       },
       {
-        "id": "plainKeyword",
-        "description": "Represents a keyword"
+        "id": "excludedCode",
+        "description": "A token that represents inactive code."
       },
       {
         "id": "controlKeyword",
-        "description": "Represents a control-flow keyword"
+        "description": "A token that represents a control-flow keyword.",
+        "superType": "keyword"
       },
       {
         "id": "operatorOverloaded",
-        "description": "Represents a custom implementation of an operator"
+        "description": "A declaration or reference to an overloaded operator."
       },
       {
-        "id": "preprocessorKeyword",
-        "description": "Represents"
+        "id": "whitespace",
+        "description": "A token that represents whitespace."
+      },
+      {
+        "id": "text",
+        "description": "A token that represents text."
       },
       {
         "id": "preprocessorText",
-        "description": "Represents"
-      },
-      {
-        "id": "excludedCode",
-        "description": ""
+        "description": "Text associated with a preprocessor directive."
       },
       {
         "id": "punctuation",
-        "description": ""
+        "description": "A token that represents punctuation."
       },
       {
         "id": "stringVerbatim",
-        "description": ""
+        "superType": "string",
+        "description": "A token that represents a verbatim string."
       },
       {
         "id": "stringEscapeCharacter",
-        "description": ""
+        "superType": "string",
+        "description": "An escape character within a string."
+      },
+      {
+        "id": "recordClass",
+        "superType": "class",
+        "description": "A definition or reference to a record class type."
       },
       {
         "id": "delegate",
-        "description": ""
+        "superType": "method",
+        "description": "A definition or reference to a delegate type."
       },
       {
         "id": "module",
-        "description": ""
+        "superType": "namespace",
+        "description": "A definition or reference to a module name."
       },
       {
-        "id": "extensionMethod",
-        "description": ""
+        "id": "recordStruct",
+        "superType": "struct",
+        "description": "A definition or reference to a record struct type."
       },
       {
         "id": "field",
-        "description": ""
+        "superType": "property",
+        "description": "A definition or reference to a field."
       },
       {
-        "id": "local",
-        "description": ""
+        "id": "constant",
+        "superType": "variable",
+        "description": "A definition or reference to a constant."
+      },
+      {
+        "id": "extensionMethod",
+        "superType": "method",
+        "description": "A definition or reference to an extension method"
       },
       {
         "id": "xmlDocCommentAttributeName",
-        "description": ""
+        "description": "A token that represents an attribute in an XML documentation comment"
       },
       {
         "id": "xmlDocCommentAttributeQuotes",
-        "description": ""
+        "description": "A token that represents an attribute quote in an XML documentation comment"
       },
       {
         "id": "xmlDocCommentAttributeValue",
-        "description": ""
+        "description": "A token that represents an attribute value in an XML documentation comment"
       },
       {
         "id": "xmlDocCommentCDataSection",
-        "description": ""
+        "description": "A token that represents a CDATA section in an XML documentation comment"
       },
       {
         "id": "xmlDocCommentComment",
-        "description": ""
+        "description": "A token that represents a comment in an XML documentation comment"
       },
       {
         "id": "xmlDocCommentDelimiter",
-        "description": ""
+        "description": "A token that represents a delimeter in an XML documentation comment"
       },
       {
         "id": "xmlDocCommentEntityReference",
-        "description": ""
+        "description": "A token that represents reference to an entity in an XML documentation comment"
       },
       {
         "id": "xmlDocCommentName",
-        "description": ""
+        "description": "A token that represents a name in an XML documentation comment"
       },
       {
         "id": "xmlDocCommentProcessingInstruction",
-        "description": ""
+        "description": "A token that represents a processing instruction in an XML documentation comment"
       },
       {
         "id": "xmlDocCommentText",
-        "description": ""
+        "description": "A token that represents text in an XML documentation comment"
+      },
+      {
+        "id": "xmlLiteralAttributeName",
+        "description": "A token that represents an attribute name in an XML literal"
+      },
+      {
+        "id": "xmlLiteralAttributeQuotes",
+        "description": "A token that represents an attribute quote in an XML literal"
+      },
+      {
+        "id": "xmlLiteralAttributeValue",
+        "description": "A token that represents an attribute value in an XML literal"
+      },
+      {
+        "id": "xmlLiteralCDataSection",
+        "description": "A token that represents a CDATA section in an XML literal"
+      },
+      {
+        "id": "xmlLiteralComment",
+        "description": "A token that represents a comment in an XML literal"
+      },
+      {
+        "id": "xmlLiteralDelimiter",
+        "description": "A token that represents a delimiter in an XML literal"
+      },
+      {
+        "id": "xmlLiteralEmbeddedExpression",
+        "description": "A token that represents an emebedded expression in an XML literal"
+      },
+      {
+        "id": "xmlLiteralEntityReference",
+        "description": "A token that represents a reference to an entity in an XML literal"
+      },
+      {
+        "id": "xmlLiteralName",
+        "description": "A token that represents a name in an XML literal"
+      },
+      {
+        "id": "xmlLiteralProcessingInstruction",
+        "description": "A token that represents a processing instruction in an XML literal"
+      },
+      {
+        "id": "xmlLiteralText",
+        "description": "A token that represents text in an XML literal"
       },
       {
         "id": "regexComment",
-        "description": ""
+        "description": "A token that represents a comment in a regex string"
       },
       {
         "id": "regexCharacterClass",
-        "description": ""
+        "description": "A token that represents a character class in a regex string"
       },
       {
         "id": "regexAnchor",
-        "description": ""
+        "description": "A token that represents an anchor in a regex string"
       },
       {
         "id": "regexQuantifier",
-        "description": ""
+        "description": "A token that represents a quantifier in a regex string"
       },
       {
         "id": "regexGrouping",
-        "description": ""
+        "description": "A token that represents a group in a regex string"
       },
       {
         "id": "regexAlternation",
-        "description": ""
+        "description": "A token that represents an alternation in a regex string"
+      },
+      {
+        "id": "regexText",
+        "description": "A token that represents text in a regex string"
       },
       {
         "id": "regexSelfEscapedCharacter",
-        "description": ""
+        "description": "A token that represents a self escaped character in a regex string"
       },
       {
         "id": "regexOtherEscape",
-        "description": ""
+        "description": "A token that represents an escape in a regex string"
+      },
+      {
+        "id": "jsonComment",
+        "description": "A token that represents a comment in a JSON string"
+      },
+      {
+        "id": "jsonNumber",
+        "description": "A token that represents a number in a JSON string"
+      },
+      {
+        "id": "jsonString",
+        "description": "A token that represents a string in a JSON string"
+      },
+      {
+        "id": "jsonKeyword",
+        "description": "A token that represents a keyword in a JSON string"
+      },
+      {
+        "id": "jsonText",
+        "description": "A token that represents text in a JSON string"
+      },
+      {
+        "id": "jsonOperator",
+        "description": "A token that represents an operator in a JSON string"
+      },
+      {
+        "id": "jsonPunctuation",
+        "description": "A token that represents punctuation in a JSON string"
+      },
+      {
+        "id": "jsonArray",
+        "description": "A token that represents an array in a JSON string"
+      },
+      {
+        "id": "jsonObject",
+        "description": "A token that represents an object in a JSON string"
+      },
+      {
+        "id": "jsonPropertyName",
+        "description": "A token that represents a property name in a JSON string"
+      },
+      {
+        "id": "jsonConstructorName",
+        "description": "A token that represents a constructor in a JSON string"
       }
     ],
     "semanticTokenModifiers": [],
@@ -3988,8 +4354,14 @@
       {
         "language": "csharp",
         "scopes": {
-          "plainKeyword": [
+          "typeParameter": [
+            "entity.name.type.type-parameter"
+          ],
+          "keyword": [
             "keyword.cs"
+          ],
+          "excludedCode": [
+            "support.other.excluded.cs"
           ],
           "controlKeyword": [
             "keyword.control.cs"
@@ -3997,14 +4369,8 @@
           "operatorOverloaded": [
             "entity.name.function.member.overload.cs"
           ],
-          "preprocessorKeyword": [
-            "keyword.preprocessor.cs"
-          ],
           "preprocessorText": [
             "meta.preprocessor.string.cs"
-          ],
-          "excludedCode": [
-            "support.other.excluded.cs"
           ],
           "punctuation": [
             "punctuation.cs"
@@ -4021,14 +4387,14 @@
           "module": [
             "entity.name.type.module.cs"
           ],
-          "extensionMethod": [
-            "entity.name.function.extension.cs"
-          ],
           "field": [
             "entity.name.variable.field.cs"
           ],
-          "local": [
-            "entity.name.variable.local.cs"
+          "constant": [
+            "variable.other.constant"
+          ],
+          "extensionMethod": [
+            "entity.name.function.extension.cs"
           ],
           "xmlDocCommentAttributeName": [
             "comment.documentation.attribute.name.cs"
@@ -4060,6 +4426,39 @@
           "xmlDocCommentText": [
             "comment.documentation.cs"
           ],
+          "xmlLiteralAttributeName": [
+            "entity.other.attribute-name.localname.xml"
+          ],
+          "xmlLiteralAttributeQuotes": [
+            "string.quoted.double.xml"
+          ],
+          "xmlLiteralAttributeValue": [
+            "meta.tag.xml"
+          ],
+          "xmlLiteralCDataSection": [
+            "string.quoted.double.xml"
+          ],
+          "xmlLiteralComment": [
+            "comment.block.xml"
+          ],
+          "xmlLiteralDelimiter": [
+            "text.xml"
+          ],
+          "xmlLiteralEmbeddedExpression": [
+            "meta.tag.xml"
+          ],
+          "xmlLiteralEntityReference": [
+            "meta.tag.xml"
+          ],
+          "xmlLiteralName": [
+            "entity.name.tag.localname.xml"
+          ],
+          "xmlLiteralProcessingInstruction": [
+            "meta.tag.xml"
+          ],
+          "xmlLiteralText": [
+            "text.xml"
+          ],
           "regexComment": [
             "string.regexp.comment.cs"
           ],
@@ -4078,11 +4477,47 @@
           "regexAlternation": [
             "keyword.operator.or.regexp.cs"
           ],
+          "regexText": [
+            "string.regexp"
+          ],
           "regexSelfEscapedCharacter": [
             "string.regexp.self-escaped-character.cs"
           ],
           "regexOtherEscape": [
             "string.regexp.other-escape.cs"
+          ],
+          "jsonComment": [
+            "comment.line.double-slash.js"
+          ],
+          "jsonNumber": [
+            "constant.numeric.json"
+          ],
+          "jsonString": [
+            "string.quoted.double.json"
+          ],
+          "jsonKeyword": [
+            "constant.language.json"
+          ],
+          "jsonText": [
+            "string.quoted.double.json"
+          ],
+          "jsonOperator": [
+            "string.quoted.double.json"
+          ],
+          "jsonPunctuation": [
+            "punctuation.separator.dictionary.key-value.json"
+          ],
+          "jsonArray": [
+            "punctuation.definition.array.begin.json"
+          ],
+          "jsonObject": [
+            "punctuation.definition.dictionary.begin.json"
+          ],
+          "jsonPropertyName": [
+            "support.type.property-name.json"
+          ],
+          "jsonConstructorName": [
+            "support.type.property-name.json"
           ]
         }
       }
@@ -4114,11 +4549,27 @@
       "commandPalette": [
         {
           "command": "dotnet.test.runTestsInContext",
-          "when": "editorLangId == csharp"
+          "when": "editorLangId == csharp && dotnet.server.activatedStandalone"
         },
         {
           "command": "dotnet.test.debugTestsInContext",
-          "when": "editorLangId == csharp"
+          "when": "editorLangId == csharp && dotnet.server.activatedStandalone"
+        },
+        {
+          "command": "o.restart",
+          "when": "config.dotnet.server.useOmnisharp"
+        },
+        {
+          "command": "csharp.listProcess",
+          "when": "false"
+        },
+        {
+          "command": "csharp.listRemoteProcess",
+          "when": "false"
+        },
+        {
+          "command": "csharp.listRemoteDockerProcess",
+          "when": "false"
         }
       ],
       "editor/title": [
@@ -4138,12 +4589,12 @@
       "editor/context": [
         {
           "command": "dotnet.test.runTestsInContext",
-          "when": "editorLangId == csharp",
+          "when": "editorLangId == csharp && dotnet.server.activatedStandalone",
           "group": "2_dotnet@1"
         },
         {
           "command": "dotnet.test.debugTestsInContext",
-          "when": "editorLangId == csharp",
+          "when": "editorLangId == csharp && dotnet.server.activatedStandalone",
           "group": "2_dotnet@2"
         }
       ]
@@ -4151,8 +4602,8 @@
     "viewsWelcome": [
       {
         "view": "debug",
-        "contents": "[Generate C# Assets for Build and Debug](command:dotnet.generateAssets)\n\nTo learn more about launch.json, see [Configuring launch.json for C# debugging](https://aka.ms/VSCode-CS-LaunchJson).",
-        "when": "debugStartLanguage == csharp"
+        "contents": "%viewsWelcome.debug.contents%",
+        "when": "debugStartLanguage == csharp && !dotnet.debug.serviceBrokerAvailable"
       }
     ]
   }

@@ -3,82 +3,38 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as path from 'path';
 import * as vscode from 'vscode';
-import CSharpExtensionExports from '../../src/CSharpExtensionExports';
-import { Advisor } from '../../src/features/diagnosticsProvider';
-import { EventStream } from '../../src/EventStream';
-import { EventType } from '../../src/omnisharp/EventType';
+import * as path from 'path';
+import { CSharpExtensionExports } from '../../src/csharpExtensionExports';
 
-export interface ActivationResult {
-    readonly advisor: Advisor;
-    readonly eventStream: EventStream;
-}
+export async function activateCSharpExtension(): Promise<void> {
+    // Ensure the dependent extension exists - when launching via F5 launch.json we can't install the extension prior to opening vscode.
+    const vscodeDotnetRuntimeExtensionId = 'ms-dotnettools.vscode-dotnet-runtime';
+    const dotnetRuntimeExtension =
+        vscode.extensions.getExtension<CSharpExtensionExports>(vscodeDotnetRuntimeExtensionId);
+    if (!dotnetRuntimeExtension) {
+        await vscode.commands.executeCommand('workbench.extensions.installExtension', vscodeDotnetRuntimeExtensionId);
+        await vscode.commands.executeCommand('workbench.action.reloadWindow');
+    }
 
-export async function activateCSharpExtension(): Promise<ActivationResult> {
-    const csharpExtension = vscode.extensions.getExtension<CSharpExtensionExports>("muhammad-sammy.csharp");
+    const csharpExtension = vscode.extensions.getExtension<CSharpExtensionExports>('muhammad-sammy.csharp');
     if (!csharpExtension) {
-        throw new Error("Failed to find installation of muhammad-sammy.csharp");
+        throw new Error('Failed to find installation of muhammad-sammy.csharp');
     }
 
-    if (!csharpExtension.isActive) {
-        await csharpExtension.activate();
-    }
+    // Explicitly await the extension activation even if completed so that we capture any errors it threw during activation.
+    await csharpExtension.activate();
 
-    try {
-        await csharpExtension.exports.initializationFinished();
-        const advisor = await csharpExtension.exports.getAdvisor();
-        const eventStream = csharpExtension.exports.eventStream;
-        console.log("muhammad-sammy.csharp activated");
-        return {
-            advisor: advisor,
-            eventStream: eventStream
-        };
-    }
-    catch (err) {
-        console.log(JSON.stringify(err));
-        throw err;
-    }
-}
-
-export async function restartOmniSharpServer(): Promise<void> {
-    const csharpExtension = vscode.extensions.getExtension<CSharpExtensionExports>("muhammad-sammy.csharp");
-    if (!csharpExtension) {
-        throw new Error("Failed to find installation of muhammad-sammy.csharp");
-    }
-
-    if (!csharpExtension.isActive) {
-        await activateCSharpExtension();
-    }
-
-    try {
-        await new Promise<void>(resolve => {
-            const hook = csharpExtension.exports.eventStream.subscribe(event => {
-                if (event.type == EventType.OmnisharpStart) {
-                    hook.unsubscribe();
-                    resolve();
-                }
-            });
-            vscode.commands.executeCommand("o.restart");
-        });
-        console.log("OmniSharp restarted");
-    }
-    catch (err) {
-        console.log(JSON.stringify(err));
-        throw err;
-    }
+    await csharpExtension.exports.initializationFinished();
+    console.log('muhammad-sammy.csharp activated');
 }
 
 export function isRazorWorkspace(workspace: typeof vscode.workspace) {
     return isGivenSln(workspace, 'BasicRazorApp2_1');
 }
 
-export function isSlnWithCsproj(workspace: typeof vscode.workspace) {
-    return isGivenSln(workspace, 'slnWithCsproj');
-}
-
 export function isSlnWithGenerator(workspace: typeof vscode.workspace) {
-    return isGivenSln(workspace,  'slnWithGenerator');
+    return isGivenSln(workspace, 'slnWithGenerator');
 }
 
 function isGivenSln(workspace: typeof vscode.workspace, expectedProjectFileName: string) {

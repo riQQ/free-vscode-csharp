@@ -1,0 +1,63 @@
+trigger:
+  batch: true
+  branches:
+    include:
+    - feature/*
+    - release
+    - main
+
+pr:
+- feature/*
+- release
+- main
+
+variables:
+  ${{ if eq(variables['Build.SourceBranchName'], 'release') }}:
+    prereleaseFlag: ''
+  ${{ else }}:
+    prereleaseFlag: '--prerelease'
+
+stages:
+- stage: Build
+  dependsOn: []
+  jobs:
+  - job: Build
+    steps:
+    - template: azure-pipelines/build.yml
+      parameters:
+        prereleaseFlag: $(prereleaseFlag)
+    pool:
+      name: NetCore-Public
+      demands: ImageOverride -equals Build.Ubuntu.2204.Amd64.Open
+
+- stage: Test
+  displayName: Test
+  dependsOn: []
+  jobs:
+  - job: Test
+    strategy:
+      matrix:
+        linux:
+          demandsName: ImageOverride -equals Build.Ubuntu.2204.Amd64.Open
+        windows:
+          demandsName: ImageOverride -equals 1es-windows-2022-open
+    pool:
+      name: NetCore-Public
+      demands: $(demandsName)
+    steps:
+    - template: azure-pipelines/test.yml
+
+- stage: Test_Omnisharp
+  displayName: Test Omnisharp
+  dependsOn: []
+  jobs:
+  - job: Test
+    strategy:
+      matrix:
+        linux:
+          demandsName: ImageOverride -equals Build.Ubuntu.2204.Amd64.Open
+    pool:
+      name: NetCore-Public
+      demands: $(demandsName)
+    steps:
+    - template: azure-pipelines/test-omnisharp.yml
