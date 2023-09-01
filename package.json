@@ -39,7 +39,8 @@
   "defaults": {
     "roslyn": "4.8.0-2.23428.2",
     "omniSharp": "1.39.7",
-    "razor": "7.0.0-preview.23258.1"
+    "razor": "7.0.0-preview.23423.3",
+    "razorOmnisharp": "7.0.0-preview.23363.1"
   },
   "main": "./dist/extension",
   "l10n": "./l10n",
@@ -775,7 +776,7 @@
     }
   ],
   "engines": {
-    "vscode": "1.73.0"
+    "vscode": "^1.73.0"
   },
   "activationEvents": [
     "onDebugInitialConfigurations",
