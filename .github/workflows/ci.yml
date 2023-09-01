@@ -41,8 +41,27 @@ jobs:
     - name: Build VSIXs
       run: gulp 'vsix:release:package'
 
-    - name: Upload VSIX build artifacts
+
+    - name: Get package version
+      run: node -e "console.log('VERSION=' + require('./package.json').version)" >> $GITHUB_ENV
+
+    - name: Upload build artifact (darwin-x64)
+      id: upload-release-asset-darwin-x64
       uses: actions/upload-artifact@v2
       with:
-        name: ci-extension-artifact
-        path: ./vsix/*.vsix
+        path: ./vsix/csharp-darwin-x64-${{ env.VERSION }}.vsix
+        name: csharp-darwin-x64.vsix
+
+    - name: Upload build artifact (linux-x64)
+      id: upload-release-asset-linux-x64
+      uses: actions/upload-artifact@v2
+      with:
+        path: ./vsix/csharp-linux-x64-${{ env.VERSION }}.vsix
+        name: csharp-linux-x64.vsix
+
+    - name: Upload build artifact (win32-x64)
+      id: upload-release-asset-win32-x64
+      uses: actions/upload-artifact@v2
+      with:
+        path: ./vsix/csharp-win32-x64-${{ env.VERSION }}.vsix
+        name: csharp-win32-x64.vsix
