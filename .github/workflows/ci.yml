@@ -14,6 +14,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
 
     - name: Setup dotnet
       uses: actions/setup-dotnet@v3
@@ -33,10 +35,10 @@ jobs:
     - name: Compile
       run: npm run compile
 
-    - name: Prepublish VSIX
+    - name: Prepublish VSIXs
       run: npm run vscode:prepublish
 
-    - name: Build platform-specific extension packages
+    - name: Build VSIXs
       run: gulp 'vsix:release:package'
 
     - name: Upload VSIX build artifact
