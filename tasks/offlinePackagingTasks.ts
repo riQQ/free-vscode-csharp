@@ -222,24 +222,19 @@ async function doPackageOffline() {
 }
 
 async function doPackageNeutral() {
-    // Set the package version using git versioning.
-    const versionInfo = await nbgv.getVersion();
-    console.log(versionInfo.npmPackageVersion);
-    await nbgv.setPackageVersion();
-
     let prerelease = false;
     if (argv.prerelease) {
         prerelease = true;
     }
 
     try {
-        // Now that we've updated the version, get the package.json.
+        // Get the package.json.
         const packageJSON = getPackageJSON();
         // Output the platform neutral VSIX using the platform neutral server bits we created before.
         await buildVsix(packageJSON, packedVsixOutputRoot, prerelease);
-    } finally {
-        // Reset package version to the placeholder value.
-        await nbgv.resetPackageVersionPlaceholder();
+    }
+    catch(err) {
+        console.log(err)
     }
 }
 
