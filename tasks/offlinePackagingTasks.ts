@@ -53,6 +53,13 @@ gulp.task('vsix:release:package', async () => {
     await doPackageOffline();
 });
 
+gulp.task('vsix:release:neutral', async () => {
+    //if user does not want to clean up the existing vsix packages
+    await cleanAsync(/* deleteVsix: */ !commandLineOptions.retainVsix);
+
+    await doPackageNeutral();
+})
+
 // Downloads dependencies for local development.
 gulp.task('installDependencies', async () => {
     await cleanAsync(/* deleteVsix: */ false);
@@ -207,6 +214,28 @@ async function doPackageOffline() {
         }
 
         // Also output the platform neutral VSIX using the platform neutral server bits we created before.
+        await buildVsix(packageJSON, packedVsixOutputRoot, prerelease);
+    } finally {
+        // Reset package version to the placeholder value.
+        await nbgv.resetPackageVersionPlaceholder();
+    }
+}
+
+async function doPackageNeutral() {
+    // Set the package version using git versioning.
+    const versionInfo = await nbgv.getVersion();
+    console.log(versionInfo.npmPackageVersion);
+    await nbgv.setPackageVersion();
+
+    let prerelease = false;
+    if (argv.prerelease) {
+        prerelease = true;
+    }
+
+    try {
+        // Now that we've updated the version, get the package.json.
+        const packageJSON = getPackageJSON();
+        // Output the platform neutral VSIX using the platform neutral server bits we created before.
         await buildVsix(packageJSON, packedVsixOutputRoot, prerelease);
     } finally {
         // Reset package version to the placeholder value.
