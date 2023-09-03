@@ -29,6 +29,7 @@ jobs:
       run: |
           npm ci
           npm i -g gulp
+          npm i -g ovsx
 
     - name: Compile
       run: npm run compile
