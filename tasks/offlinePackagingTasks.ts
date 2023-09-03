@@ -58,7 +58,7 @@ gulp.task('vsix:release:neutral', async () => {
     await cleanAsync(/* deleteVsix: */ !commandLineOptions.retainVsix);
 
     await doPackageNeutral();
-})
+});
 
 // Downloads dependencies for local development.
 gulp.task('installDependencies', async () => {
@@ -232,9 +232,8 @@ async function doPackageNeutral() {
         const packageJSON = getPackageJSON();
         // Output the platform neutral VSIX using the platform neutral server bits we created before.
         await buildVsix(packageJSON, packedVsixOutputRoot, prerelease);
-    }
-    catch(err) {
-        console.log(err)
+    } catch (err) {
+        console.log(err);
     }
 }
 
