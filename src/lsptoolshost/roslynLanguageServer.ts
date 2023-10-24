@@ -153,13 +153,7 @@ export class RoslynLanguageServer {
             if (!dotnetInfo) {
                 dotnetInfo = await getDotnetInfo([]);
             }
-            reportProjectConfigurationEvent(
-                params,
-                this._platformInfo,
-                dotnetInfo,
-                this._solutionFile?.fsPath,
-                true
-            );
+            reportProjectConfigurationEvent(params, this._platformInfo, dotnetInfo, this._solutionFile?.fsPath, true);
         });
     }
 
@@ -175,12 +169,7 @@ export class RoslynLanguageServer {
         languageServerEvents: RoslynLanguageServerEvents
     ): Promise<RoslynLanguageServer> {
         const serverOptions: ServerOptions = async () => {
-            return await this.startServer(
-                platformInfo,
-                hostExecutableResolver,
-                context,
-                additionalExtensionPaths
-            );
+            return await this.startServer(platformInfo, hostExecutableResolver, context, additionalExtensionPaths);
         };
 
         const documentSelector = languageServerOptions.documentSelector;
