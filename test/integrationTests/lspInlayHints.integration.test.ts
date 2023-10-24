@@ -3,24 +3,15 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
-
-import { should, assert } from 'chai';
-import testAssetWorkspace from '../../omnisharptest/omnisharpIntegrationTests/testAssets/testAssetWorkspace';
 import * as path from 'path';
-import { activateCSharpExtension, isRazorWorkspace, isSlnWithGenerator } from './integrationHelpers';
+import * as vscode from 'vscode';
+import * as jestLib from '@jest/globals';
+import testAssetWorkspace from './testAssets/testAssetWorkspace';
+import * as integrationHelpers from './integrationHelpers';
 import { InlayHint, InlayHintKind, Position } from 'vscode-languageserver-protocol';
 
-suite(`LSP Inlay Hints ${testAssetWorkspace.description}`, function () {
-    let fileUri: vscode.Uri;
-
-    suiteSetup(async function () {
-        should();
-
-        if (isRazorWorkspace(vscode.workspace) || isSlnWithGenerator(vscode.workspace)) {
-            this.skip();
-        }
-
+jestLib.describe(`LSP Inlay Hints ${testAssetWorkspace.description}`, function () {
+    jestLib.beforeAll(async function () {
         const editorConfig = vscode.workspace.getConfiguration('editor');
         await editorConfig.update('inlayHints.enabled', true);
         const dotnetConfig = vscode.workspace.getConfiguration('dotnet');
@@ -39,41 +30,41 @@ suite(`LSP Inlay Hints ${testAssetWorkspace.description}`, function () {
         await csharpConfig.update('inlayHints.enableInlayHintsForLambdaParameterTypes', true);
         await csharpConfig.update('inlayHints.enableInlayHintsForImplicitObjectCreation', true);
 
-        const fileName = 'inlayHints.cs';
-        const projectDirectory = testAssetWorkspace.projects[0].projectDirectoryPath;
-        const filePath = path.join(projectDirectory, fileName);
-        fileUri = vscode.Uri.file(filePath);
-
-        await vscode.commands.executeCommand('vscode.open', fileUri);
-        await activateCSharpExtension();
+        await integrationHelpers.openFileInWorkspaceAsync(path.join('src', 'app', 'inlayHints.cs'));
+        await integrationHelpers.activateCSharpExtension();
     });
 
-    suiteTeardown(async () => {
+    jestLib.afterAll(async () => {
         await testAssetWorkspace.cleanupWorkspace();
     });
 
-    test('Hints retrieved for region', async () => {
+    jestLib.test('Hints retrieved for region', async () => {
         const range = new vscode.Range(new vscode.Position(4, 8), new vscode.Position(15, 85));
+        const activeDocument = vscode.window.activeTextEditor?.document.uri;
+        if (!activeDocument) {
+            throw new Error('No active document');
+        }
         const hints: vscode.InlayHint[] = await vscode.commands.executeCommand(
             'vscode.executeInlayHintProvider',
-            fileUri,
+            activeDocument,
             range
         );
 
-        assert.lengthOf(hints, 5);
+        jestLib.expect(hints).toHaveLength(6);
 
         assertInlayHintEqual(hints[0], InlayHint.create(Position.create(6, 12), 'InlayHints', InlayHintKind.Type));
         assertInlayHintEqual(hints[1], InlayHint.create(Position.create(7, 27), 'InlayHints', InlayHintKind.Type));
-        assertInlayHintEqual(hints[2], InlayHint.create(Position.create(9, 17), 'i:', InlayHintKind.Parameter));
-        assertInlayHintEqual(hints[3], InlayHint.create(Position.create(10, 15), 'param1:', InlayHintKind.Parameter));
-        assertInlayHintEqual(hints[4], InlayHint.create(Position.create(11, 27), 'param1:', InlayHintKind.Parameter));
+        assertInlayHintEqual(hints[2], InlayHint.create(Position.create(8, 28), 'string', InlayHintKind.Type));
+        assertInlayHintEqual(hints[3], InlayHint.create(Position.create(9, 17), 'i:', InlayHintKind.Parameter));
+        assertInlayHintEqual(hints[4], InlayHint.create(Position.create(10, 15), 'param1:', InlayHintKind.Parameter));
+        assertInlayHintEqual(hints[5], InlayHint.create(Position.create(11, 27), 'param1:', InlayHintKind.Parameter));
 
         function assertInlayHintEqual(actual: vscode.InlayHint, expected: InlayHint) {
             const actualLabel = actual.label as string;
-            assert.equal(actualLabel, expected.label);
-            assert.equal(actual.position.line, expected.position.line);
-            assert.equal(actual.position.character, expected.position.character);
-            assert.equal(actual.kind, expected.kind);
+            jestLib.expect(actualLabel).toBe(expected.label);
+            jestLib.expect(actual.position.line).toBe(expected.position.line);
+            jestLib.expect(actual.position.character).toBe(expected.position.character);
+            jestLib.expect(actual.kind).toBe(expected.kind);
         }
     });
 });

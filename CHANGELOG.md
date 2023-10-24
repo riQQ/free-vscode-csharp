@@ -1,14 +1,116 @@
 ## Known Issues
- 
+
 - Diagnostics related feature requests and improvements [#5951](https://github.com/dotnet/vscode-csharp/issues/5951)
-- [O# Parity] FixAll support for code fixes and refactorings [#5735](https://github.com/dotnet/vscode-csharp/issues/5735)
+- [O# Parity] Nested code code action support for code fixes and refactorings [#5735](https://github.com/dotnet/vscode-csharp/issues/5735)
 - [O# Parity] Nuget restore [#5725](https://github.com/dotnet/vscode-csharp/issues/5725)
-- [O# Parity] Support loading projects/files without a solution file [#5722](https://github.com/dotnet/vscode-csharp/issues/5722)
-- [O# Parity] Some csproj projects will not correctly load [#5721](https://github.com/dotnet/vscode-csharp/issues/5721)
-- [O# Parity] Run and debug tests in context [#5719](https://github.com/dotnet/vscode-csharp/issues/5719)
 - Debug from .csproj and .sln [#5876](https://github.com/dotnet/vscode-csharp/issues/5876)
 
 ## Latest
+* Update Razor to 7.0.0-preview.23513.5 (PR: [#6551](https://github.com/dotnet/vscode-csharp/pull/6551))
+  * Reduce noisy errors when viewing git diff (PR: [razor#9407](https://github.com/dotnet/razor/pull/9407))
+* Update Roslyn to 4.9.0-1.23513.7 (PR: [#6548](https://github.com/dotnet/vscode-csharp/pull/6548))
+  * Fix extraneous error when connecting to devkit (PR: [#70298](https://github.com/dotnet/roslyn/pull/70298))
+  * Add support for using Mono to load .NET Framework projects on macOS and Linux (PR: [#70263](https://github.com/dotnet/roslyn/pull/70263))
+  * Fix source generator and analyzer output not being recognized if you didn't have C# Dev Kit installed (PR: [#70331](https://github.com/dotnet/roslyn/pull/70331))
+* Hide debug console when using `"console": "integratedTerminal"` (PR: [#6523](https://github.com/dotnet/vscode-csharp/pull/6523))
+* Fix dotnet path resolution when using snap installed packages (PR: [#6515](https://github.com/dotnet/vscode-csharp/pull/6515))
+* Track debugging sessions until csdevkit is initialized (PR: [#6480](https://github.com/dotnet/vscode-csharp/pull/6480))
+* Update vsdbg and vsdbg-ui to 2.0.4 (PR: [#6517](https://github.com/dotnet/vscode-csharp/pull/6517))
+* Add setting to control Razor component commit behaviour (PR: [#6506](https://github.com/dotnet/vscode-csharp/pull/6506))
+* Razor textmate colorization fixes (PR: [#6514](https://github.com/dotnet/vscode-csharp/pull/6514))
+* Update Razor version to 7.0.0-preview.23475.5 (PR: [#6506](https://github.com/dotnet/vscode-csharp/pull/6506))
+  * Add setting for whether to complete components with space (PR: [razor#9379](https://github.com/dotnet/razor/pull/9379))
+
+## 2.6.24
+* Update Roslyn version to 4.9.0-1.23506.7 (PR: [#6447](https://github.com/dotnet/vscode-csharp/pull/6447))
+  * Fix various issues with project loading and allow fallbacks to .NET framework msbuild (PR: [#70240](https://github.com/dotnet/roslyn/pull/70240))
+* Fix some Razor colorization issues (PR: [#6502](https://github.com/dotnet/vscode-csharp/pull/6502))
+* Fire telemetry if Razor buffers get out of sync, and recover from same (PR: [#6494](https://github.com/dotnet/vscode-csharp/pull/6494))
+* Update OmniSharp to 1.39.10 (PR: [#6491](https://github.com/dotnet/vscode-csharp/pull/6491))
+  * Add RazorComplier EA to support razor generators (PR: [omnisharp-roslyn#2572](https://github.com/OmniSharp/omnisharp-roslyn/pull/2572))
+  * Add Kind parameter to InlayHint (PR: [omnisharp-roslyn#2570](https://github.dev/OmniSharp/omnisharp-roslyn/pull/2570))
+  * Do not include commit characters if the typed span is empty (PR: [omnisharp-roslyn#2569](https://github.com/OmniSharp/omnisharp-roslyn/pull/2569))
+  * Update Roslyn to version 4.9.0-1.23504.3 (PR: [omnisharp-roslyn#2567](https://github.com/OmniSharp/omnisharp-roslyn/pull/2567))
+  * Async diagnostics analyzer work queue (PR: [omnisharp-roslyn#2351](https://github.com/OmniSharp/omnisharp-roslyn/pull/2351))
+  * Add InlayHint implementation to OmniSharp.LSP (PR: [omnisharp-roslyn#2566](https://github.com/OmniSharp/omnisharp-roslyn/pull/2566))
+  * Include the project file name when invoking `dotnet build` (PR: [omnisharp-roslyn#2565](https://github.com/OmniSharp/omnisharp-roslyn/pull/2565))
+  * feat: ignore diagnostics for generated code (PR: [omnisharp-roslyn#2509](https://github.com/OmniSharp/omnisharp-roslyn/pull/2509))
+  * Update documentation to reflect --stdio flag deprecation (#2439) (PR: [omnisharp-roslyn#2554](https://github.com/OmniSharp/omnisharp-roslyn/pull/2554))
+  * Update Roslyn to version 4.8.0-1.23374.10 (PR: [omnisharp-roslyn#2555](https://github.com/OmniSharp/omnisharp-roslyn/pull/2555))
+  * Use double quote when quoting un script path (PR: [omnisharp-roslyn#2553](https://github.com/OmniSharp/omnisharp-roslyn/pull/2553))
+  * Use core LSP TokenTypes where possible and validate token names (PR: [omnisharp-roslyn#2548](https://github.com/OmniSharp/omnisharp-roslyn/pull/2548))
+* Add Razor C# semantic tokens support in VS Code (PR: [#6489](https://github.com/dotnet/vscode-csharp/pull/6489))
+* Update Roslyn version to 4.9.0-1.23502.8 (PR: [#6447](https://github.com/dotnet/vscode-csharp/pull/6447))
+  * Update Razor project configuration file name (PR: [#70156](https://github.com/dotnet/roslyn/pull/70156))* added support.md file (PR: [#6478](https://github.com/dotnet/vscode-csharp/pull/6478))
+* Debugger: Improve the display of various debug configurations and snippets (PR: [#6456](https://github.com/dotnet/vscode-csharp/pull/6456))
+* Initialize Razor even if Razor doc isn't opened yet (PR: [#6473](https://github.com/dotnet/vscode-csharp/pull/6473))
+* Debugger: better handle long strings ([#6496](https://github.com/dotnet/vscode-csharp/issues/6496)). Strings are truncated if they are longer than 1024 UTF-16 characters, but the full value  up to 5,242,880 characters or 10 megabytes, is available using 'Copy Value' in the watch or variables window. Truncated strings will end with '...'.
+
+## 2.5.30
+* Add code action fix all support (PR: [#6310](https://github.com/dotnet/vscode-csharp/pull/6310))
+* Update Roslyn version to 4.9.0-1.23502.2 (PR: [#6463](https://github.com/dotnet/vscode-csharp/pull/6463))
+  * Fix issue loading projects on .NET 8 RC2 (PR: [#70196](https://github.com/dotnet/roslyn/pull/70196))
+  * Fix exception thrown by outdated version of ExternalAccess.RazorCompiler.dll (PR: [#70716](https://github.com/dotnet/roslyn/pull/70176))
+  * Fix crash when navigating to .NET Framework reference assemblies (PR: [#69936](https://github.com/dotnet/roslyn/pull/69936))
+  * Fix error when only the invariant culture is available (PR: [#70096](https://github.com/dotnet/roslyn/pull/70096))
+* Update Razor version to 7.0.0-preview.23475.5 (PR: [#6449](https://github.com/dotnet/vscode-csharp/pull/6449))
+  * Add Razor language server telemetry when DevKit is installed (PR: [#9283](https://github.com/dotnet/razor/pull/9283))
+  * Use message pack for project.razor.* configuration file (PR: [#9270](https://github.com/dotnet/razor/pull/9270))
+* Fix issues with Razor completion (PR: [#6441](https://github.com/dotnet/vscode-csharp/pull/6441))
+* Add option to collect crash dumps on language server crash (PR: [#6438](https://github.com/dotnet/vscode-csharp/pull/6438))
+* Add support for multilaunch for Blazorwasm (PR: [#6432](https://github.com/dotnet/vscode-csharp/pull/6432))
+* Fix issue in Razor new file formatting (PR: [#6429](https://github.com/dotnet/vscode-csharp/pull/6429))
+* Fix issue in debug tests where tests would complete before the debugger attached (PR: [#6415](https://github.com/dotnet/vscode-csharp/pull/6415))
+* Hide certain debugger launch configurations when devkit is installed (PR: [#6405](https://github.com/dotnet/vscode-csharp/pull/6405))
+* Fix issue where build errors were not parsed correctly in the problems list (PR: [#6340](https://github.com/dotnet/vscode-csharp/pull/6340))
+* Update debugger packages to 2.0.3 (PR: [#6401](https://github.com/dotnet/vscode-csharp/pull/6401))
+
+## 2.4.4
+* Respect `dotnet.preferCSharpExtension` option (PR: [#6390](https://github.com/dotnet/vscode-csharp/pull/6390))
+
+## 2.3.27
+* Update Roslyn version to 4.8.0-3.23470.7 (PR: [#6408](https://github.com/dotnet/vscode-csharp/pull/6408))
+  * Update NuGet version to fix issues loading projects with .NET 8 RC2 (PR: [#70023](https://github.com/dotnet/roslyn/pull/70023))
+  * Update MSBuildLocator version to fix issues loading projects when only .NET 6 is installed (PR: [#70038](https://github.com/dotnet/roslyn/pull/70038))
+  * Remove diagnostic source name (PR: [#69939](https://github.com/dotnet/roslyn/pull/69939))
+  * Fix fold all regions (PR: [#69817](https://github.com/dotnet/roslyn/pull/69817))
+  * Fix escaping and wrapping in hover (PR: [#69893](https://github.com/dotnet/roslyn/pull/69893))
+  * Fix error in override completion when containing type does not exist (PR: [#69855](https://github.com/dotnet/roslyn/pull/69855))
+* Fix issues generating assets in Omnisharp (PR: [#6380](https://github.com/dotnet/vscode-csharp/pull/6380))
+* Allow Razor to format new documents via Roslyn (PR: [#6329](https://github.com/dotnet/vscode-csharp/pull/6329))
+* Switch to named pipes for client <-> server communication (PR: [#6351](https://github.com/dotnet/vscode-csharp/pull/6351))
+* Only show clr debugger if on Windows (PR: [#6359](https://github.com/dotnet/vscode-csharp/pull/6359))
+* Update Razor version to 7.0.0-preview.23456.2 (PR: [#6304](https://github.com/dotnet/vscode-csharp/pull/6304))
+  * Fixes regression where semantic colors for razor components appear as red
+* Make completion complex text edits more robust (PR: [#6325](https://github.com/dotnet/vscode-csharp/pull/6325))
+* Fix dotnet info when the dotnet path contains spaces (PR: [#6334](https://github.com/dotnet/vscode-csharp/pull/6334))
+* Add support for specifying a .runsettings file when using Roslyn LSP (PR: [#6265](https://github.com/dotnet/vscode-csharp/pull/6265))
+* Update Roslyn version (PR: [#6265](https://github.com/dotnet/vscode-csharp/pull/6265))
+  * Add server support for .runsettings in unit tests (PR: [#69792](https://github.com/dotnet/roslyn/pull/69792))
+  * Log more information when we're unable to parse a URI (PR: [#69840](https://github.com/dotnet/roslyn/pull/69840))
+  * Bump ICSharpCode.Decompiler to 8.1.0.745 (PR: [#69772](https://github.com/dotnet/roslyn/pull/69772))
+  * Fix override completion erroring when framework assemblies are not found (PR: [#69795](https://github.com/dotnet/roslyn/pull/69795))
+* Remove test only files from vsix (PR: [#6332](https://github.com/dotnet/vscode-csharp/pull/6332))
+* Fix override completion when drive letter casing does not match (PR: [#6315](https://github.com/dotnet/vscode-csharp/pull/6315))
+* Allow the server path to be specified by the `DOTNET_ROSLYN_SERVER_PATH` environment variable (PR: [#6316](https://github.com/dotnet/vscode-csharp/pull/6316))
+
+## 2.2.10
+* Update Roslyn version
+  * Includes better support for .NET 8 and .NET Framework-targeting projects (PR: [#69616](https://github.com/dotnet/roslyn/pull/69616))
+    * This should fix a number of reports where projects don't have full IntelliSense. .NET Framework projects on Windows should load without errors. .NET Framework targeting projects on Mac and Linux which would use Mono are still processed as if they are .NET Core projects and may not load correctly; support for Mono is coming in a future update.
+  * Fix issues where some projects fail to load being unable to find NuGet.Frameworks (PR: [#69824](https://github.com/dotnet/roslyn/pull/69824))
+* Update Razor to 7.0.0-preview.23455.5 (PR: [#6291](https://github.com/dotnet/vscode-csharp/pull/6291))
+  * Fixes issue reading razor.format.enable and other options (PR: [dotnet/razor#9240](https://github.com/dotnet/razor/issues/9240))
+* Fix parsing of tasks.json with comments in certain locations (PR: [#6288](https://github.com/dotnet/vscode-csharp/pull/6288))
+* Fix Razor browser discovery issues on Mac and Linux `DOTNET_ROSLYN_SERVER_PATH` environment variable (PR: [#6269](https://github.com/dotnet/vscode-csharp/pull/6269))
+
+## 2.1.2
+* Update Roslyn version (PR: [#6264](https://github.com/dotnet/vscode-csharp/pull/6264))
+  * Upgrade MSBuildLocator to fix homebrew dotnet resolution (PR: [#69769](https://github.com/dotnet/roslyn/pull/69769))
+  * Fix reported ExeName / ExeVersion (PR: [#69771](https://github.com/dotnet/roslyn/pull/69771))
+* Add 1.x setting names to migrated settings descriptions (PR: [#6266](https://github.com/dotnet/vscode-csharp/pull/6266))
+
+## 2.0.436
 * Update Roslyn version (PR: [#6245](https://github.com/dotnet/vscode-csharp/pull/6245))
   * Fix import completion (PR: [#69691](https://github.com/dotnet/roslyn/pull/69691))
   * Reduce overhead on semantic token refresh requests (PR: [#69690](https://github.com/dotnet/roslyn/pull/69690))
@@ -36,7 +138,7 @@
 * Fix issue resolving .NET 7 runtimes from path (PR: [#6175](https://github.com/dotnet/vscode-csharp/pull/6175))
 * Fix URI issue when loading Razor files (PR: [#6168](https://github.com/dotnet/vscode-csharp/pull/6168))
 * Bump Razor to 7.0.0-preview.23417.3 (PR: [#6165](https://github.com/dotnet/vscode-csharp/pull/6165))
-  * Fix various textDocument/foldingRange issues (PR: [#9134](https://github.com/dotnet/razor/pull/9134)) 
+  * Fix various textDocument/foldingRange issues (PR: [#9134](https://github.com/dotnet/razor/pull/9134))
 * Clarify dotnet path option description (PR: [#6164](https://github.com/dotnet/vscode-csharp/pull/6164))
 * Handle multiple dotnet on path and symlinks (PR: [#6152](https://github.com/dotnet/vscode-csharp/pull/6152))
 * Localize Roslyn options (PR: [#6136](https://github.com/dotnet/vscode-csharp/pull/6136))
@@ -75,7 +177,7 @@
 * Fix misleading LSP server logs (PR: [#69378](https://github.com/dotnet/roslyn/pull/69378))
 * Add support for code lens enable/disable options to roslyn LSP (PR: [#6001](https://github.com/dotnet/vscode-csharp/pull/6001))
 * Onboard Localization pipeline (PR: [#5990](https://github.com/dotnet/vscode-csharp/pull/5990))
-* Enable loading translated strings from razor TS code (PR: [#5962](https://github.com/dotnet/vscode-csharp/pull/5962))
+* Enable loading translated strings from Razor TS code (PR: [#5962](https://github.com/dotnet/vscode-csharp/pull/5962))
 * Update typescript and eslint plugin to remove build warning (PR: [6002](https://github.com/dotnet/vscode-csharp/pull/6002))
 * Report how the extension was activated (PR: [#6043](https://github.com/dotnet/vscode-csharp/pull/6043))
 * Update Razor to 7.0.0-preview.23410.1 (PR: [#6105](https://github.com/dotnet/vscode-csharp/pull/6105))
@@ -96,9 +198,9 @@ We are switching to the new Roslyn language server as the default. We recognize 
 
 ## 1.26.0
 * Update OmniSharp to 1.39.7 (PR: [#5840](https://github.com/OmniSharp/omnisharp-vscode/pull/5840))
-  * Respond to breaking change in VSCode 1.79.2 in completion (PR:[#2542](https://github.com/OmniSharp/omnisharp-roslyn/pull/2542))
-  * Use dotnet-cake for build (PR:[#2537](https://github.com/OmniSharp/omnisharp-roslyn/pull/2537))
-  * Implement LSP CodeAction resolve (PR:[#2467](https://github.com/OmniSharp/omnisharp-roslyn/pull/2467))
+  * Respond to breaking change in VSCode 1.79.2 in completion (PR:[omnisharp-roslyn#2542](https://github.com/OmniSharp/omnisharp-roslyn/pull/2542))
+  * Use dotnet-cake for build (PR:[omnisharp-roslyn#2537](https://github.com/OmniSharp/omnisharp-roslyn/pull/2537))
+  * Implement LSP CodeAction resolve (PR:[omnisharp-roslyn#2467](https://github.com/OmniSharp/omnisharp-roslyn/pull/2467))
 * Update debugger to 1.25.8 (PR: [#5706](https://github.com/OmniSharp/omnisharp-vscode/pull/5706))
 * Updates to README, default branch and repo link (PR: [#5709](https://github.com/OmniSharp/omnisharp-vscode/pull/5709))
 
@@ -125,25 +227,26 @@ We are switching to the new Roslyn language server as the default. We recognize 
   * Add C#/HTML folding range support ([razor#8309](https://github.com/dotnet/razor/pull/8309))
   * Formatting fixes ([razor#8318](https://github.com/dotnet/razor/pull/8318))
 * Update OmniSharp to 1.39.6 (PR: [#5625](https://github.com/OmniSharp/omnisharp-vscode/pull/5625))
-  * Use new VS threading version to match with Razor (PR:[#2518](https://github.com/OmniSharp/omnisharp-roslyn/pull/2518))
+  * Use new VS threading version to match with Razor (PR:[omnisharp-roslyn#2518](https://github.com/OmniSharp/omnisharp-roslyn/pull/2518))
 * Update OmniSharp to 1.39.5 (PR: [#5618](https://github.com/OmniSharp/omnisharp-vscode/pull/5618))
-  * Update to Roslyn `4.6.0-3.23153.5` (PR:[#2511](https://github.com/OmniSharp/omnisharp-roslyn/pull/2511))
-  * Report to the client if the project being loaded is sdk style (PR:[#2502](https://github.com/OmniSharp/omnisharp-roslyn/pull/2502))
+  * Update to Roslyn `4.6.0-3.23153.5` (PR:[omnisharp-roslyn#2511](https://github.com/OmniSharp/omnisharp-roslyn/pull/2511))
+  * Report to the client if the project being loaded is sdk style (PR:[omnisharp-roslyn#2502](https://github.com/OmniSharp/omnisharp-roslyn/pull/2502))
 * Automatically trust ASP.NET Core HTTPS development certificate (PR: [#5589](https://github.com/OmniSharp/omnisharp-vscode/pull/5589))
 * Improve outline to be less verbose (PR: [#5536](https://github.com/OmniSharp/omnisharp-vscode/pull/5536))
 * Update Razor TextMate grammar (PR: [#5570](https://github.com/OmniSharp/omnisharp-vscode/pull/5570))
 
 ## 1.25.4
 * Update OmniSharp to 1.39.4 (PR: [#5544](https://github.com/OmniSharp/omnisharp-vscode/pull/5544))
-  * Disable snippets in sync completion (PR: [#2497](https://github.com/OmniSharp/omnisharp-roslyn/pull/2497))
+  * Disable snippets in sync completion (PR: [omnisharp-roslyn#2497](https://github.com/OmniSharp/omnisharp-roslyn/pull/2497))
 
 ## 1.25.3
 * Update Razor to 7.0.0-preview.23067.5 (PR: [#5543](https://github.com/OmniSharp/omnisharp-vscode/pull/5543))
   * Enables support for arm64
   * Adds document color and color presentation features
-* Update Roslyn to 4.5.0-2.22527.10 (PR: [#2486](https://github.com/OmniSharp/omnisharp-roslyn/pull/2486))
-* Update dotnet-script dependencies to 1.4.0 (PR: [#2477](https://github.com/OmniSharp/omnisharp-roslyn/pull/2477))
-* Register the LanguageServerLogger only once (PR: [#2473](https://github.com/OmniSharp/omnisharp-roslyn/pull/2473))
+* Update OmniSharp to 1.39.3 (PR: [#5520](https://github.com/OmniSharp/omnisharp-vscode/pull/5520))
+  * Update Roslyn to 4.5.0-2.22527.10 (PR: [omnisharp-roslyn#2486](https://github.com/OmniSharp/omnisharp-roslyn/pull/2486))
+  * Update dotnet-script dependencies to 1.4.0 (PR: [omnisharp-roslyn#2477](https://github.com/OmniSharp/omnisharp-roslyn/pull/2477))
+  * Register the LanguageServerLogger only once (PR: [omnisharp-roslyn#2473](https://github.com/OmniSharp/omnisharp-roslyn/pull/2473))
 * Fix extension not finding mono. ([#5454](https://github.com/OmniSharp/omnisharp-vscode/issues/5454), PR: [#5484](https://github.com/OmniSharp/omnisharp-vscode/pull/5484))
 * Update debugger to 1.25.3. ([#5460](https://github.com/OmniSharp/omnisharp-vscode/issues/5460), PR: [#5489](https://github.com/OmniSharp/omnisharp-vscode/pull/5489))
 * Fix missing fix all commands. ([#5474](https://github.com/OmniSharp/omnisharp-vscode/issues/5474), PR: [#5475](https://github.com/OmniSharp/omnisharp-vscode/pull/5475))

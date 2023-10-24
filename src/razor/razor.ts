@@ -9,11 +9,14 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import * as Razor from '../../src/razor/src/extension';
 import { EventStream } from '../eventStream';
+import { PlatformInformation } from '../shared/platform';
 
 export async function activateRazorExtension(
     context: vscode.ExtensionContext,
     extensionPath: string,
     eventStream: EventStream,
+    csharpDevkitExtension: vscode.Extension<any> | undefined,
+    platformInfo: PlatformInformation,
     useOmnisharpServer: boolean
 ) {
     const razorConfig = vscode.workspace.getConfiguration('razor');
@@ -35,7 +38,15 @@ export async function activateRazorExtension(
                 /* enableProposedApis: */ false
             );
         } else {
-            await Razor.activate(vscode, context, languageServerDir, eventStream, /* enableProposedApis: */ false);
+            await Razor.activate(
+                vscode,
+                context,
+                languageServerDir,
+                eventStream,
+                csharpDevkitExtension,
+                platformInfo,
+                /* enableProposedApis: */ false
+            );
         }
     } else {
         vscode.window.showWarningMessage(

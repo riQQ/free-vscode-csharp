@@ -11,53 +11,44 @@ pr:
 - release
 - main
 
-variables:
-  ${{ if eq(variables['Build.SourceBranchName'], 'release') }}:
-    prereleaseFlag: ''
-  ${{ else }}:
-    prereleaseFlag: '--prerelease'
-
 stages:
-- stage: Build
-  dependsOn: []
-  jobs:
-  - job: Build
-    steps:
-    - template: azure-pipelines/build.yml
-      parameters:
-        prereleaseFlag: $(prereleaseFlag)
-    pool:
-      name: NetCore-Public
-      demands: ImageOverride -equals Build.Ubuntu.2204.Amd64.Open
+- template: azure-pipelines/build.yml
 
 - stage: Test
   displayName: Test
   dependsOn: []
   jobs:
-  - job: Test
-    strategy:
-      matrix:
-        linux:
-          demandsName: ImageOverride -equals Build.Ubuntu.2204.Amd64.Open
-        windows:
-          demandsName: ImageOverride -equals 1es-windows-2022-open
-    pool:
-      name: NetCore-Public
-      demands: $(demandsName)
-    steps:
-    - template: azure-pipelines/test.yml
+  - template: azure-pipelines/test.yml
+    parameters:
+      jobName: Linux
+      poolName: NetCore-Public
+      demandsName: 1es-ubuntu-2004-open
 
-- stage: Test_Omnisharp
-  displayName: Test Omnisharp
+  - template: azure-pipelines/test.yml
+    parameters:
+      jobName: Windows
+      poolName: NetCore-Public
+      demandsName: 1es-windows-2022-open
+
+  - template: azure-pipelines/test.yml
+    parameters:
+      jobName: MacOS
+      poolName: Azure Pipelines
+      vmImageName: macOS-13
+
+- stage: Test_OmniSharp
+  displayName: Test OmniSharp
   dependsOn: []
   jobs:
   - job: Test
     strategy:
       matrix:
         linux:
-          demandsName: ImageOverride -equals Build.Ubuntu.2204.Amd64.Open
+          demandsName: 1es-ubuntu-2004-open
+        windows:
+          demandsName: 1es-windows-2022-open
     pool:
       name: NetCore-Public
-      demands: $(demandsName)
+      demands: ImageOverride -equals $(demandsName)
     steps:
     - template: azure-pipelines/test-omnisharp.yml

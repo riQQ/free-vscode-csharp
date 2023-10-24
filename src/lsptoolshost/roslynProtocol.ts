@@ -5,6 +5,7 @@
 
 import { Command } from 'vscode';
 import * as lsp from 'vscode-languageserver-protocol';
+import { CodeAction } from 'vscode-languageserver-protocol';
 import { ProjectConfigurationMessage } from '../shared/projectConfiguration';
 
 export interface WorkspaceDebugConfigurationParams {
@@ -83,6 +84,11 @@ export interface RunTestsParams extends lsp.WorkDoneProgressParams, lsp.PartialR
      * Whether the request should attempt to call back to the client to attach a debugger before running the tests.
      */
     attachDebugger: boolean;
+
+    /**
+     * The absolute path to a .runsettings file to configure the test run.
+     */
+    runSettingsPath?: string;
 }
 
 export interface TestProgress {
@@ -134,6 +140,14 @@ export interface ShowToastNotificationParams {
 
 export interface BuildOnlyDiagnosticIdsResult {
     ids: string[];
+}
+
+export interface RoslynFixAllCodeAction extends CodeAction {
+    scope: string;
+}
+
+export interface NamedPipeInformation {
+    pipeName: string;
 }
 
 export namespace WorkspaceDebugConfigurationRequest {
@@ -208,4 +222,10 @@ export namespace BuildOnlyDiagnosticIdsRequest {
     export const method = 'workspace/buildOnlyDiagnosticIds';
     export const messageDirection: lsp.MessageDirection = lsp.MessageDirection.clientToServer;
     export const type = new lsp.RequestType0<BuildOnlyDiagnosticIdsResult, void>(method);
+}
+
+export namespace CodeActionFixAllResolveRequest {
+    export const method = 'codeAction/resolveFixAll';
+    export const messageDirection: lsp.MessageDirection = lsp.MessageDirection.clientToServer;
+    export const type = new lsp.RequestType<RoslynFixAllCodeAction, RoslynFixAllCodeAction, void>(method);
 }

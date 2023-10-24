@@ -8,15 +8,20 @@ import * as path from 'path';
 import {
     codeExtensionPath,
     omnisharpFeatureTestRunnerPath,
-    mochaPath,
     rootPath,
-    omnisharpTestAssetsRootPath,
+    integrationTestAssetsRootPath,
     omnisharpTestRootPath,
     testRootPath,
     integrationTestRunnerPath,
-    jestPath,
+    razorIntegrationTestAssetsRootPath,
+    razorIntegrationTestRunnerPath,
 } from './projectPaths';
 import spawnNode from './spawnNode';
+import * as jest from 'jest';
+import { Config } from '@jest/types';
+import { jestOmniSharpUnitTestProjectName } from '../omnisharptest/omnisharpUnitTests/jest.config';
+import { jestUnitTestProjectName } from '../test/unitTests/jest.config';
+import { razorTestProjectName } from '../test/razorTests/jest.config';
 
 gulp.task('omnisharptest:feature', async () => {
     const env = {
@@ -37,30 +42,27 @@ gulp.task('omnisharptest:feature', async () => {
     return result;
 });
 
+gulp.task('test:razor', async () => {
+    runJestTest(razorTestProjectName);
+});
+
+const razorIntegrationTestProjects = ['BasicRazorApp2_1'];
+for (const projectName of razorIntegrationTestProjects) {
+    gulp.task(`test:razorintegration:${projectName}`, async () => runIntegrationTest(projectName, /* razor */ true));
+}
+
+gulp.task(
+    'test:razorintegration',
+    gulp.series(razorIntegrationTestProjects.map((projectName) => `test:razorintegration:${projectName}`))
+);
+
 gulp.task('omnisharptest:unit', async () => {
-    const result = await spawnNode([
-        mochaPath,
-        '--ui',
-        'tdd',
-        '-c',
-        'out/omnisharptest/omnisharpUnitTests/**/*.test.js',
-    ]);
-
-    if (result.code === null || result.code > 0) {
-        // Ensure that gulp fails when tests fail
-        throw new Error(`Exit code: ${result.code}  Signal: ${result.signal}`);
-    }
-
-    return result;
+    runJestTest(jestOmniSharpUnitTestProjectName);
 });
 
-gulp.task('omnisharp:jest:test', async () => {
-    runJestTest(/.*omnisharpJestTests.*/);
-});
+const omnisharpIntegrationTestProjects = ['singleCsproj', 'slnWithCsproj', 'slnFilterWithCsproj', 'BasicRazorApp2_1'];
 
-const projectNames = ['singleCsproj', 'slnWithCsproj', 'slnFilterWithCsproj', 'BasicRazorApp2_1'];
-
-for (const projectName of projectNames) {
+for (const projectName of omnisharpIntegrationTestProjects) {
     gulp.task(`omnisharptest:integration:${projectName}:stdio`, async () =>
         runOmnisharpIntegrationTest(projectName, 'stdio')
     );
@@ -75,33 +77,41 @@ for (const projectName of projectNames) {
 
 gulp.task(
     'omnisharptest:integration',
-    gulp.series(projectNames.map((projectName) => `omnisharptest:integration:${projectName}`))
+    gulp.series(omnisharpIntegrationTestProjects.map((projectName) => `omnisharptest:integration:${projectName}`))
 );
 gulp.task(
     'omnisharptest:integration:stdio',
-    gulp.series(projectNames.map((projectName) => `omnisharptest:integration:${projectName}:stdio`))
+    gulp.series(omnisharpIntegrationTestProjects.map((projectName) => `omnisharptest:integration:${projectName}:stdio`))
 );
 gulp.task(
     'omnisharptest:integration:lsp',
-    gulp.series(projectNames.map((projectName) => `omnisharptest:integration:${projectName}:lsp`))
+    gulp.series(omnisharpIntegrationTestProjects.map((projectName) => `omnisharptest:integration:${projectName}:lsp`))
 );
 // TODO: Enable lsp integration tests once tests for unimplemented features are disabled.
 gulp.task(
     'omnisharptest',
-    gulp.series('omnisharp:jest:test', 'omnisharptest:feature', 'omnisharptest:unit', 'omnisharptest:integration:stdio')
+    gulp.series('omnisharptest:unit', 'omnisharptest:feature', 'omnisharptest:integration:stdio')
 );
 
-gulp.task('test:integration:slnWithCsproj', async () => runIntegrationTest('slnWithCsproj'));
-
 gulp.task('test:unit', async () => {
-    runJestTest(/unitTests.*\.ts/);
+    await runJestTest(jestUnitTestProjectName);
 });
 
-gulp.task('test', gulp.series('test:unit'));
+const integrationTestProjects = ['slnWithCsproj'];
+for (const projectName of integrationTestProjects) {
+    gulp.task(`test:integration:${projectName}`, async () => runIntegrationTest(projectName));
+}
+
+gulp.task(
+    'test:integration',
+    gulp.series(integrationTestProjects.map((projectName) => `test:integration:${projectName}`))
+);
+
+gulp.task('test', gulp.series('test:unit', 'test:integration', 'test:razor', 'test:razorintegration'));
 
 async function runOmnisharpIntegrationTest(testAssetName: string, engine: 'stdio' | 'lsp') {
     const workspaceFile = `omnisharp${engine === 'lsp' ? '_lsp' : ''}_${testAssetName}.code-workspace`;
-    const workspacePath = path.join(omnisharpTestAssetsRootPath, testAssetName, '.vscode', workspaceFile);
+    const workspacePath = path.join(integrationTestAssetsRootPath, testAssetName, '.vscode', workspaceFile);
     const codeTestsPath = path.join(omnisharpTestRootPath, 'omnisharpIntegrationTests');
 
     const env = {
@@ -129,26 +139,23 @@ async function runOmnisharpIntegrationTest(testAssetName: string, engine: 'stdio
     return result;
 }
 
-async function runIntegrationTest(testAssetName: string) {
+async function runIntegrationTest(testAssetName: string, razor = false) {
     const workspacePath = path.join(
-        omnisharpTestAssetsRootPath,
+        razor ? razorIntegrationTestAssetsRootPath : integrationTestAssetsRootPath,
         testAssetName,
         '.vscode',
         `lsp_tools_host_${testAssetName}.code-workspace`
     );
-    const codeTestsPath = path.join(testRootPath, 'integrationTests');
+    const codeTestsPath = path.join(testRootPath, razor ? 'razorIntegrationTests' : 'integrationTests');
 
     const env = {
-        OSVC_SUITE: testAssetName,
-        CODE_TESTS_PATH: codeTestsPath,
-        CODE_EXTENSIONS_PATH: codeExtensionPath,
         CODE_TESTS_WORKSPACE: workspacePath,
-        CODE_WORKSPACE_ROOT: rootPath,
+        CODE_EXTENSIONS_PATH: rootPath,
         EXTENSIONS_TESTS_PATH: path.join(codeTestsPath, 'index.js'),
-        CODE_DISABLE_EXTENSIONS: 'true',
     };
 
-    const result = await spawnNode([integrationTestRunnerPath, '--enable-source-maps'], { env, cwd: rootPath });
+    const runnerPath = razor ? razorIntegrationTestRunnerPath : integrationTestRunnerPath;
+    const result = await spawnNode([runnerPath, '--enable-source-maps'], { env, cwd: rootPath });
 
     if (result.code === null || result.code > 0) {
         // Ensure that gulp fails when tests fail
@@ -158,13 +165,18 @@ async function runIntegrationTest(testAssetName: string) {
     return result;
 }
 
-async function runJestTest(testFilterRegex: RegExp) {
-    const result = await spawnNode([jestPath, testFilterRegex.source]);
+async function runJestTest(project: string) {
+    const configPath = path.join(rootPath, 'jest.config.ts');
+    const { results } = await jest.runCLI(
+        {
+            config: configPath,
+            selectProjects: [project],
+            verbose: true,
+        } as Config.Argv,
+        [project]
+    );
 
-    if (result.code === null || result.code > 0) {
-        // Ensure that gulp fails when tests fail
-        throw new Error(`Exit code: ${result.code}  Signal: ${result.signal}`);
+    if (!results.success) {
+        throw new Error('Tests failed.');
     }
-
-    return result;
 }

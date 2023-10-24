@@ -3,21 +3,17 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as vscode from 'vscode';
 import reportIssue from '../../../src/shared/reportIssue';
-import { expect } from 'chai';
-import { vscode } from '../../../src/vscodeAdapter';
-import { Options } from '../../../src/shared/options';
-import { FakeMonoResolver, fakeMonoInfo } from '../fakes/fakeMonoResolver';
-import { FakeDotnetResolver } from '../fakes/fakeDotnetResolver';
+import { FakeMonoResolver, fakeMonoInfo } from '../../omnisharpUnitTests/fakes/fakeMonoResolver';
+import { FakeDotnetResolver } from '../../omnisharpUnitTests/fakes/fakeDotnetResolver';
 import { DotnetInfo } from '../../../src/shared/utils/dotnetInfo';
-import { getEmptyOptions } from '../fakes/fakeOptions';
-import { getFakeVsCode } from '../../../test/unitTests/fakes';
+import { jest, describe, test, expect, beforeEach } from '@jest/globals';
 
-suite(`${reportIssue.name}`, () => {
+describe(`${reportIssue.name}`, () => {
     const vscodeVersion = 'myVersion';
     const csharpExtVersion = 'csharpExtVersion';
     const isValidForMono = true;
-    let vscode: vscode;
     const extension1 = {
         packageJSON: {
             name: 'name1',
@@ -27,7 +23,7 @@ suite(`${reportIssue.name}`, () => {
         },
         id: 'id1',
         extensionPath: 'c:/extensions/abc-x64',
-    };
+    } as vscode.Extension<any>;
 
     const extension2 = {
         packageJSON: {
@@ -38,7 +34,7 @@ suite(`${reportIssue.name}`, () => {
         },
         id: 'id2',
         extensionPath: 'c:/extensions/xyz-x64',
-    };
+    } as vscode.Extension<any>;
 
     const fakeDotnetInfo: DotnetInfo = {
         FullInfo: 'myDotnetInfo',
@@ -50,119 +46,72 @@ suite(`${reportIssue.name}`, () => {
     let fakeMonoResolver: FakeMonoResolver;
     let fakeDotnetResolver: FakeDotnetResolver;
     const getDotnetInfo = async () => Promise.resolve(fakeDotnetInfo);
-    let options: Options;
     let issueBody: string;
 
-    setup(() => {
-        vscode = getFakeVsCode();
-        vscode.commands.executeCommand = async (command: string, ...rest: any[]) => {
-            issueBody = rest[0].issueBody;
-            return undefined;
-        };
+    beforeEach(() => {
+        jest.spyOn(vscode.workspace, 'getConfiguration').mockReturnValue({
+            get: jest.fn((_config: string) => {
+                return undefined;
+            }),
+            has: jest.fn(),
+            inspect: jest.fn(),
+            update: jest.fn(),
+        } as vscode.WorkspaceConfiguration);
 
-        vscode.version = vscodeVersion;
-        vscode.extensions.all = [extension1, extension2];
+        jest.spyOn(vscode.commands, 'executeCommand').mockImplementation(async (command: string, ...rest: any[]) => {
+            issueBody = rest[0].issueBody;
+            return {} as any;
+        });
+        jest.replaceProperty(vscode, 'extensions', {
+            all: [extension1, extension2],
+            getExtension: jest.fn(),
+            onDidChange: jest.fn(),
+        } as typeof vscode.extensions);
+
         fakeMonoResolver = new FakeMonoResolver();
         fakeDotnetResolver = new FakeDotnetResolver();
-        options = getEmptyOptions();
     });
 
-    suite('The body is passed to the vscode clipboard and', () => {
+    describe('The body is passed to the vscode clipboard and', () => {
         test('it contains the vscode version', async () => {
-            await reportIssue(
-                vscode,
-                csharpExtVersion,
-                getDotnetInfo,
-                isValidForMono,
-                options,
-                fakeDotnetResolver,
-                fakeMonoResolver
-            );
-            expect(issueBody).to.include(`**VSCode version**: ${vscodeVersion}`);
+            await reportIssue(csharpExtVersion, getDotnetInfo, isValidForMono, fakeDotnetResolver, fakeMonoResolver);
+            expect(issueBody).toContain(`**VSCode version**: ${vscodeVersion}`);
         });
 
         test('it contains the csharp extension version', async () => {
-            await reportIssue(
-                vscode,
-                csharpExtVersion,
-                getDotnetInfo,
-                isValidForMono,
-                options,
-                fakeDotnetResolver,
-                fakeMonoResolver
-            );
-            expect(issueBody).to.include(`**C# Extension**: ${csharpExtVersion}`);
+            await reportIssue(csharpExtVersion, getDotnetInfo, isValidForMono, fakeDotnetResolver, fakeMonoResolver);
+            expect(issueBody).toContain(`**C# Extension**: ${csharpExtVersion}`);
         });
 
         test('it contains dotnet info', async () => {
-            await reportIssue(
-                vscode,
-                csharpExtVersion,
-                getDotnetInfo,
-                isValidForMono,
-                options,
-                fakeDotnetResolver,
-                fakeMonoResolver
-            );
-            expect(issueBody).to.contain(fakeDotnetInfo.FullInfo);
+            await reportIssue(csharpExtVersion, getDotnetInfo, isValidForMono, fakeDotnetResolver, fakeMonoResolver);
+            expect(issueBody).toContain(fakeDotnetInfo.FullInfo);
         });
 
         test('mono information is obtained when it is a valid mono platform', async () => {
-            await reportIssue(
-                vscode,
-                csharpExtVersion,
-                getDotnetInfo,
-                isValidForMono,
-                options,
-                fakeDotnetResolver,
-                fakeMonoResolver
-            );
-            expect(fakeMonoResolver.getMonoCalled).to.be.equal(true);
+            await reportIssue(csharpExtVersion, getDotnetInfo, isValidForMono, fakeDotnetResolver, fakeMonoResolver);
+            expect(fakeMonoResolver.getMonoCalled).toEqual(true);
         });
 
         test('mono version is put in the body when it is a valid mono platform', async () => {
-            await reportIssue(
-                vscode,
-                csharpExtVersion,
-                getDotnetInfo,
-                isValidForMono,
-                options,
-                fakeDotnetResolver,
-                fakeMonoResolver
-            );
-            expect(fakeMonoResolver.getMonoCalled).to.be.equal(true);
-            expect(issueBody).to.contain(fakeMonoInfo.version);
+            await reportIssue(csharpExtVersion, getDotnetInfo, isValidForMono, fakeDotnetResolver, fakeMonoResolver);
+            expect(fakeMonoResolver.getMonoCalled).toEqual(true);
+            expect(issueBody).toContain(fakeMonoInfo.version);
         });
 
         test('mono information is not obtained when it is not a valid mono platform', async () => {
-            await reportIssue(
-                vscode,
-                csharpExtVersion,
-                getDotnetInfo,
-                false,
-                options,
-                fakeDotnetResolver,
-                fakeMonoResolver
-            );
-            expect(fakeMonoResolver.getMonoCalled).to.be.equal(false);
+            await reportIssue(csharpExtVersion, getDotnetInfo, false, fakeDotnetResolver, fakeMonoResolver);
+            expect(fakeMonoResolver.getMonoCalled).toEqual(false);
         });
 
         test('The url contains the name, publisher and version for all the extensions that are not builtin', async () => {
-            await reportIssue(
-                vscode,
-                csharpExtVersion,
-                getDotnetInfo,
-                isValidForMono,
-                options,
-                fakeDotnetResolver,
-                fakeMonoResolver
-            );
-            expect(issueBody).to.contain(extension2.packageJSON.name);
-            expect(issueBody).to.contain(extension2.packageJSON.publisher);
-            expect(issueBody).to.contain(extension2.packageJSON.version);
-            expect(issueBody).to.not.contain(extension1.packageJSON.name);
-            expect(issueBody).to.not.contain(extension1.packageJSON.publisher);
-            expect(issueBody).to.not.contain(extension1.packageJSON.version);
+            await reportIssue(csharpExtVersion, getDotnetInfo, isValidForMono, fakeDotnetResolver, fakeMonoResolver);
+            expect(issueBody).toContain(extension2.packageJSON.name);
+            expect(issueBody).toContain(extension2.packageJSON.publisher);
+            expect(issueBody).toContain(extension2.packageJSON.version);
+            expect(issueBody).not.toContain(extension1.packageJSON.name);
+            expect(issueBody).not.toContain(extension1.packageJSON.publisher);
+            expect(issueBody).not.toContain(extension1.packageJSON.version);
         });
     });
 });

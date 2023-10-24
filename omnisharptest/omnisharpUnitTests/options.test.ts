@@ -3,133 +3,101 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { should, expect } from 'chai';
-import { Options } from '../../src/shared/options';
-import { getVSCodeWithConfig, updateConfig } from '../../test/unitTests/fakes';
+import * as vscode from 'vscode';
+import { jest, describe, test, expect, beforeEach } from '@jest/globals';
 import { URI } from 'vscode-uri';
 import * as path from 'path';
+import { commonOptions, omnisharpOptions } from '../../src/shared/options';
+import { getWorkspaceConfiguration } from '../../test/unitTests/fakes';
 
-suite('Options tests', () => {
-    suiteSetup(() => should());
-
+describe('Options tests', () => {
+    beforeEach(() => {
+        jest.spyOn(vscode.workspace, 'getConfiguration').mockReturnValue(getWorkspaceConfiguration());
+    });
     test('Verify defaults', () => {
-        const vscode = getVSCodeWithConfig();
-        const options = Options.Read(vscode);
-        options.commonOptions.serverPath.should.equal('');
-        options.omnisharpOptions.monoPath.should.equal('');
-        options.commonOptions.defaultSolution.should.equal('');
-        options.commonOptions.waitForDebugger.should.equal(false);
-        options.omnisharpOptions.loggingLevel.should.equal('information');
-        options.omnisharpOptions.autoStart.should.equal(true);
-        options.omnisharpOptions.projectLoadTimeout.should.equal(60);
-        options.omnisharpOptions.maxProjectResults.should.equal(250);
-        options.omnisharpOptions.useEditorFormattingSettings.should.equal(true);
-        options.omnisharpOptions.useFormatting.should.equal(true);
-        options.omnisharpOptions.showReferencesCodeLens.should.equal(true);
-        options.omnisharpOptions.showTestsCodeLens.should.equal(true);
-        options.omnisharpOptions.disableCodeActions.should.equal(false);
-        options.omnisharpOptions.showOmnisharpLogOnError.should.equal(true);
-        options.omnisharpOptions.minFindSymbolsFilterLength.should.equal(0);
-        options.omnisharpOptions.maxFindSymbolsItems.should.equal(1000);
-        options.omnisharpOptions.enableMsBuildLoadProjectsOnDemand.should.equal(false);
-        options.omnisharpOptions.enableRoslynAnalyzers.should.equal(true);
-        options.omnisharpOptions.enableEditorConfigSupport.should.equal(true);
-        options.omnisharpOptions.enableDecompilationSupport.should.equal(false);
-        options.omnisharpOptions.enableImportCompletion.should.equal(false);
-        options.omnisharpOptions.enableAsyncCompletion.should.equal(false);
-        options.omnisharpOptions.analyzeOpenDocumentsOnly.should.equal(true);
-        options.omnisharpOptions.testRunSettings.should.equal('');
+        expect(commonOptions.serverPath).toEqual('');
+        expect(omnisharpOptions.monoPath).toEqual('');
+        expect(commonOptions.defaultSolution).toEqual('');
+        expect(commonOptions.waitForDebugger).toEqual(false);
+        expect(omnisharpOptions.loggingLevel).toEqual('information');
+        expect(omnisharpOptions.autoStart).toEqual(true);
+        expect(omnisharpOptions.projectLoadTimeout).toEqual(60);
+        expect(omnisharpOptions.maxProjectResults).toEqual(250);
+        expect(omnisharpOptions.useEditorFormattingSettings).toEqual(true);
+        expect(omnisharpOptions.useFormatting).toEqual(true);
+        expect(omnisharpOptions.showReferencesCodeLens).toEqual(true);
+        expect(omnisharpOptions.showTestsCodeLens).toEqual(true);
+        expect(omnisharpOptions.disableCodeActions).toEqual(false);
+        expect(omnisharpOptions.showOmnisharpLogOnError).toEqual(true);
+        expect(omnisharpOptions.minFindSymbolsFilterLength).toEqual(0);
+        expect(omnisharpOptions.maxFindSymbolsItems).toEqual(1000);
+        expect(omnisharpOptions.enableMsBuildLoadProjectsOnDemand).toEqual(false);
+        expect(omnisharpOptions.enableRoslynAnalyzers).toEqual(true);
+        expect(omnisharpOptions.enableEditorConfigSupport).toEqual(true);
+        expect(omnisharpOptions.enableDecompilationSupport).toEqual(false);
+        expect(omnisharpOptions.enableImportCompletion).toEqual(false);
+        expect(omnisharpOptions.enableAsyncCompletion).toEqual(false);
+        expect(omnisharpOptions.analyzeOpenDocumentsOnly).toEqual(true);
+        expect(commonOptions.runSettingsPath).toEqual('');
     });
 
     test('Verify return no excluded paths when files.exclude empty', () => {
-        const vscode = getVSCodeWithConfig();
-        updateConfig(vscode, undefined, 'files.exclude', {});
+        vscode.workspace.getConfiguration().update('files.exclude', {});
 
-        const excludedPaths = Options.getExcludedPaths(vscode);
-        expect(excludedPaths).to.be.empty;
+        const excludedPaths = commonOptions.excludePaths;
+        expect(excludedPaths).toHaveLength(0);
     });
 
     test('Verify return excluded paths when files.exclude populated', () => {
-        const vscode = getVSCodeWithConfig();
-        updateConfig(vscode, undefined, 'files.exclude', { '**/node_modules': true, '**/assets': false });
+        vscode.workspace.getConfiguration().update('files.exclude', { '**/node_modules': true, '**/assets': false });
 
-        const excludedPaths = Options.getExcludedPaths(vscode);
-        excludedPaths.should.deep.equal(['**/node_modules']);
+        const excludedPaths = commonOptions.excludePaths;
+        expect(excludedPaths).toStrictEqual(['**/node_modules']);
     });
 
     test('Verify return no excluded paths when files.exclude and search.exclude empty', () => {
-        const vscode = getVSCodeWithConfig();
-        updateConfig(vscode, undefined, 'files.exclude', {});
-        updateConfig(vscode, undefined, 'search.exclude', {});
+        vscode.workspace.getConfiguration().update('files.exclude', {});
+        vscode.workspace.getConfiguration().update('search.exclude', {});
 
-        const excludedPaths = Options.getExcludedPaths(vscode, true);
-        expect(excludedPaths).to.be.empty;
-    });
-
-    test('Verify return excluded paths when files.exclude and search.exclude populated', () => {
-        const vscode = getVSCodeWithConfig();
-        updateConfig(vscode, undefined, 'files.exclude', { '/Library': true });
-        updateConfig(vscode, undefined, 'search.exclude', { '**/node_modules': true, '**/assets': false });
-
-        const excludedPaths = Options.getExcludedPaths(vscode, true);
-        excludedPaths.should.deep.equal(['/Library', '**/node_modules']);
+        const excludedPaths = commonOptions.excludePaths;
+        expect(excludedPaths).toHaveLength(0);
     });
 
     test('BACK-COMPAT: "omnisharp.loggingLevel": "verbose" == "omnisharp.loggingLevel": "debug"', () => {
-        const vscode = getVSCodeWithConfig();
-        updateConfig(vscode, 'omnisharp', 'loggingLevel', 'verbose');
+        vscode.workspace.getConfiguration().update('omnisharp.loggingLevel', 'verbose');
 
-        const options = Options.Read(vscode);
-
-        options.omnisharpOptions.loggingLevel.should.equal('debug');
+        expect(omnisharpOptions.loggingLevel).toEqual('debug');
     });
 
     test('BACK-COMPAT: "csharp.omnisharp" is used if it is set and "omnisharp.path" is not', () => {
-        const vscode = getVSCodeWithConfig();
-        updateConfig(vscode, 'csharp', 'omnisharp', 'OldPath');
+        vscode.workspace.getConfiguration().update('csharp.omnisharp', 'OldPath');
 
-        const options = Options.Read(vscode);
-
-        options.commonOptions.serverPath.should.equal('OldPath');
+        expect(commonOptions.serverPath).toEqual('OldPath');
     });
 
     test('BACK-COMPAT: "csharp.omnisharp" is not used if "omnisharp.path" is set', () => {
-        const vscode = getVSCodeWithConfig();
-        updateConfig(vscode, 'omnisharp', 'path', 'NewPath');
-        updateConfig(vscode, 'csharp', 'omnisharp', 'OldPath');
+        vscode.workspace.getConfiguration().update('omnisharp.path', 'NewPath');
+        vscode.workspace.getConfiguration().update('csharp.omnisharp', 'OldPath');
 
-        const options = Options.Read(vscode);
-
-        options.commonOptions.serverPath.should.equal('NewPath');
+        expect(commonOptions.serverPath).toEqual('NewPath');
     });
 
     test('"omnisharp.defaultLaunchSolution" is used if set', () => {
-        const vscode = getVSCodeWithConfig();
         const workspaceFolderUri = URI.file('/Test');
-        vscode.workspace.workspaceFolders = [{ index: 0, name: 'Test', uri: workspaceFolderUri }];
+        jest.replaceProperty(vscode.workspace, 'workspaceFolders', [
+            { index: 0, name: 'Test', uri: workspaceFolderUri },
+        ]);
 
-        updateConfig(vscode, 'omnisharp', 'defaultLaunchSolution', 'some_valid_solution.sln');
+        vscode.workspace.getConfiguration().update('omnisharp.defaultLaunchSolution', 'some_valid_solution.sln');
 
-        const options = Options.Read(vscode);
-
-        options.commonOptions.defaultSolution.should.equals(
-            path.join(workspaceFolderUri.fsPath, 'some_valid_solution.sln')
-        );
+        expect(commonOptions.defaultSolution).toEqual(path.join(workspaceFolderUri.fsPath, 'some_valid_solution.sln'));
     });
 
     test('"omnisharp.testRunSettings" is used if set', () => {
-        const vscode = getVSCodeWithConfig();
-        updateConfig(
-            vscode,
-            'omnisharp',
-            'testRunSettings',
-            'some_valid_path\\some_valid_runsettings_files.runsettings'
-        );
+        vscode.workspace
+            .getConfiguration()
+            .update('omnisharp.testRunSettings', 'some_valid_path\\some_valid_runsettings_files.runsettings');
 
-        const options = Options.Read(vscode);
-
-        options.omnisharpOptions.testRunSettings.should.equal(
-            'some_valid_path\\some_valid_runsettings_files.runsettings'
-        );
+        expect(commonOptions.runSettingsPath).toEqual('some_valid_path\\some_valid_runsettings_files.runsettings');
     });
 });
