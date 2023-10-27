@@ -6,7 +6,7 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as common from '../common';
-import { CoreClrDebugUtil } from './util';
+import { CoreClrDebugUtil, getTargetArchitecture } from './util';
 import { PlatformInformation } from '../shared/platform';
 import {
     DebuggerPrerequisiteWarning,
@@ -278,10 +278,15 @@ export class DebugAdapterExecutableFactory implements vscode.DebugAdapterDescrip
         // use the executable specified in the package.json if it exists or determine it based on some other information (e.g. the session)
         if (!executable) {
             const dotNetInfo = await getDotnetInfo(omnisharpOptions.dotNetCliPaths);
-
+            const targetArchitecture = getTargetArchitecture(
+                this.platformInfo,
+                _session.configuration.targetArchitecture,
+                dotNetInfo
+            );
             const command = path.join(
                 common.getExtensionPath(),
                 '.debugger',
+                targetArchitecture,
                 'netcoredbg',
                 'netcoredbg' + CoreClrDebugUtil.getPlatformExeExtension()
             );
