@@ -55,6 +55,7 @@ import { ServerStateChange } from './lsptoolshost/serverStateChange';
 import { SolutionSnapshotProvider } from './lsptoolshost/services/solutionSnapshotProvider';
 import { RazorTelemetryDownloader } from './razor/razorTelemetryDownloader';
 import { commonOptions, omnisharpOptions, razorOptions } from './shared/options';
+import { BuildResultDiagnostics } from './lsptoolshost/services/buildResultReporterService';
 import { debugSessionTracker } from './coreclrDebug/provisionalDebugSessionTracker';
 
 export async function activate(
@@ -77,6 +78,7 @@ export async function activate(
 
     const csharpChannel = vscode.window.createOutputChannel('C#');
     const dotnetTestChannel = vscode.window.createOutputChannel('.NET Test Log');
+    const dotnetChannel = vscode.window.createOutputChannel('.NET NuGet Restore');
     const csharpchannelObserver = new CsharpChannelObserver(csharpChannel);
     const csharpLogObserver = new CsharpLoggerObserver(csharpChannel);
     eventStream.subscribe(csharpchannelObserver.post);
@@ -167,10 +169,10 @@ export async function activate(
             optionStream,
             csharpChannel,
             dotnetTestChannel,
+            dotnetChannel,
             roslynLanguageServerEvents
         );
     } else {
-        const dotnetChannel = vscode.window.createOutputChannel('.NET');
         const dotnetChannelObserver = new DotNetChannelObserver(dotnetChannel);
         const dotnetLoggerObserver = new DotnetLoggerObserver(dotnetChannel);
         eventStream.subscribe(dotnetChannelObserver.post);
@@ -415,6 +417,10 @@ function profferBrokeredServices(
         serviceContainer.profferServiceFactory(
             Descriptors.solutionSnapshotProviderRegistration,
             (_mk, _op, _sb) => new SolutionSnapshotProvider(languageServerPromise)
+        ),
+        serviceContainer.profferServiceFactory(
+            Descriptors.csharpExtensionBuildResultService,
+            (_mk, _op, _sb) => new BuildResultDiagnostics(languageServerPromise)
         )
     );
 }
