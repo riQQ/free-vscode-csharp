@@ -6,15 +6,15 @@
   "displayName": "C#",
   "author": "Muhammad Sammy",
   "license": "SEE LICENSE IN RuntimeLicenses/license.txt",
-  "qna": "https://github.com/dotnet/vscode-csharp/issues",
+  "qna": "https://github.com/muhammadsammy/free-vscode-csharp/issues",
   "icon": "images/csharpIcon.png",
   "preview": false,
   "bugs": {
-    "url": "https://github.com/OmniSharp/omnisharp-vscode/issues"
+    "url": "https://github.com/muhammadsammy/free-vscode-csharp/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/OmniSharp/omnisharp-vscode.git"
+    "url": "https://github.com/muhammadsammy/free-vscode-csharp.git"
   },
   "categories": [
     "Debuggers",
