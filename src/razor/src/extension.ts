@@ -6,7 +6,6 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as vscodeapi from 'vscode';
-import * as util from '../../common';
 import { ExtensionContext } from 'vscode';
 import { BlazorDebugConfigurationProvider } from './blazorDebug/blazorDebugConfigurationProvider';
 import { CodeActionsHandler } from './codeActions/codeActionsHandler';
