@@ -1457,7 +1457,7 @@
           "dotnet.preferCSharpExtension": {
             "scope": "resource",
             "type": "boolean",
-            "default": false,
+            "default": true,
             "description": "%configuration.dotnet.preferCSharpExtension%"
           },
           "dotnet.dotnetPath": {
@@ -1558,7 +1558,7 @@
         "properties": {
           "dotnet.server.useOmnisharp": {
             "type": "boolean",
-            "default": false,
+            "default": true,
             "description": "Switches to use the Omnisharp server for language features when enabled (requires restart). This option will not be honored with C# Dev Kit installed.",
             "order": 0
           },
