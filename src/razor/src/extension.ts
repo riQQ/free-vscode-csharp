@@ -6,6 +6,7 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as vscodeapi from 'vscode';
+import * as util from '../../common';
 import { ExtensionContext } from 'vscode';
 import { BlazorDebugConfigurationProvider } from './blazorDebug/blazorDebugConfigurationProvider';
 import { CodeActionsHandler } from './codeActions/codeActionsHandler';
@@ -114,7 +115,12 @@ export async function activate(
 
         const languageServiceClient = new RazorLanguageServiceClient(languageServerClient);
 
-        const documentManager = new RazorDocumentManager(languageServerClient, logger, razorTelemetryReporter);
+        const documentManager = new RazorDocumentManager(
+            languageServerClient,
+            logger,
+            razorTelemetryReporter,
+            platformInfo
+        );
         const documentSynchronizer = new RazorDocumentSynchronizer(documentManager, logger);
         reportTelemetryForDocuments(documentManager, razorTelemetryReporter);
         const languageConfiguration = new RazorLanguageConfiguration();

@@ -56,6 +56,7 @@ import { registerCodeActionFixAllCommands } from './fixAllCodeAction';
 import { commonOptions, languageServerOptions, omnisharpOptions } from '../shared/options';
 import { NamedPipeInformation } from './roslynProtocol';
 import { IDisposable } from '../disposable';
+import { registerNestedCodeActionCommands } from './nestedCodeAction';
 import { registerRestoreCommands } from './restore';
 import { BuildDiagnosticsService } from './buildDiagnosticsService';
 
@@ -492,8 +493,8 @@ export class RoslynLanguageServer {
                 _channel.appendLine('Activating C# + C# Dev Kit...');
             }
 
-            const csharpDevkitArgs = await this.getCSharpDevkitExportArgs(csharpDevkitExtension);
-            args = args.concat(csharpDevkitArgs);
+            const csharpDevKitArgs = this.getCSharpDevKitExportArgs();
+            args = args.concat(csharpDevKitArgs);
 
             await this.setupDevKitEnvironment(env, csharpDevkitExtension);
         } else {
@@ -552,8 +553,9 @@ export class RoslynLanguageServer {
             // Error information will be captured from the stdout/stderr streams above.
             childProcess.on('exit', (code) => {
                 if (code && code !== 0) {
-                    _channel.appendLine(`Language server process exited with ${code}`);
-                    reject();
+                    const message = `Language server process exited with ${code}`;
+                    _channel.appendLine(message);
+                    reject(new Error(message));
                 }
             });
         });
@@ -734,24 +736,17 @@ export class RoslynLanguageServer {
         );
     }
 
-    private static async getCSharpDevkitExportArgs(
-        csharpDevkitExtension: vscode.Extension<CSharpDevKitExports>
-    ): Promise<string[]> {
-        const exports: CSharpDevKitExports = await csharpDevkitExtension.activate();
-
-        const extensionPaths = languageServerOptions.extensionsPaths || [
-            this.getLanguageServicesDevKitComponentPath(exports),
-        ];
-
+    private static getCSharpDevKitExportArgs(): string[] {
         const args: string[] = [];
 
-        args.push('--sharedDependencies');
-        args.push(exports.components['@microsoft/visualstudio-server-shared']);
-
-        for (const extensionPath of extensionPaths) {
-            args.push('--extension');
-            args.push(extensionPath);
-        }
+        const clientRoot = __dirname;
+        const devKitDepsPath = path.join(
+            clientRoot,
+            '..',
+            '.roslynDevKit',
+            'Microsoft.VisualStudio.LanguageServices.DevKit.dll'
+        );
+        args.push('--extension', devKitDepsPath);
 
         args.push('--sessionId', getSessionId());
         return args;
@@ -781,13 +776,6 @@ export class RoslynLanguageServer {
         }
 
         await exports.setupTelemetryEnvironmentAsync(env);
-    }
-
-    private static getLanguageServicesDevKitComponentPath(csharpDevKitExports: CSharpDevKitExports): string {
-        return path.join(
-            csharpDevKitExports.components['@microsoft/visualstudio-languageservices-devkit'],
-            'Microsoft.VisualStudio.LanguageServices.DevKit.dll'
-        );
     }
 
     private static GetTraceLevel(logLevel: string): Trace {
@@ -865,7 +853,7 @@ export async function activateRoslynLanguageServer(
 
     // Register any commands that need to be handled by the extension.
     registerCommands(context, languageServer, hostExecutableResolver, _channel);
-
+    registerNestedCodeActionCommands(context, languageServer, _channel);
     registerCodeActionFixAllCommands(context, languageServer, _channel);
 
     registerRazorCommands(context, languageServer);
