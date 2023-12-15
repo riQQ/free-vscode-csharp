@@ -880,7 +880,7 @@ export async function activateRoslynLanguageServer(
     return languageServer;
 
     function scanExtensionPlugins(): string[] {
-        return vscode.extensions.all.flatMap((extension) => {
+        const extensionsFromPackageJson = vscode.extensions.all.flatMap((extension) => {
             let loadPaths = extension.packageJSON.contributes?.['csharpExtensionLoadPaths'];
             if (loadPaths === undefined || loadPaths === null) {
                 _traceChannel.appendLine(`Extension ${extension.id} does not contribute csharpExtensionLoadPaths`);
@@ -898,6 +898,8 @@ export async function activateRoslynLanguageServer(
             _traceChannel.appendLine(`Extension ${extension.id} contributes csharpExtensionLoadPaths: ${loadPaths}`);
             return loadPaths;
         });
+        const extensionsFromOptions = languageServerOptions.extensionsPaths ?? [];
+        return extensionsFromPackageJson.concat(extensionsFromOptions);
     }
 }
 
