@@ -1,7 +1,7 @@
 {
   "name": "csharp",
   "publisher": "muhammad-sammy",
-  "version": "2.14.8",
+  "version": "2.14.9",
   "description": "Free/Libre C# support for vscode-compatible editors.",
   "displayName": "C#",
   "author": "Muhammad Sammy",
