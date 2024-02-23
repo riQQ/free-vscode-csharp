@@ -3,7 +3,6 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as path from 'path';
 import * as vscode from 'vscode';
 import * as vscodeapi from 'vscode';
 import { ExtensionContext } from 'vscode';
@@ -87,15 +86,6 @@ export async function activate(
         );
 
         const dotnetInfo = await hostExecutableResolver.getHostExecutableInfo();
-        const dotnetRuntimePath = path.dirname(dotnetInfo.path);
-
-        // Take care to always run .NET processes on the runtime that we intend.
-        // The dotnet.exe we point to should not go looking for other runtimes.
-        const env: NodeJS.ProcessEnv = { ...process.env };
-        env.DOTNET_ROOT = dotnetRuntimePath;
-        env.DOTNET_MULTILEVEL_LOOKUP = '0';
-        // Save user's DOTNET_ROOT env-var value so server can recover the user setting when needed
-        env.DOTNET_ROOT_USER = process.env.DOTNET_ROOT ?? 'EMPTY';
 
         // Set up DevKit environment for telemetry
         if (csharpDevkitExtension) {
