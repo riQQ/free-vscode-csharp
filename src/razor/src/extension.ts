@@ -50,6 +50,8 @@ import { RazorLanguageServerOptions } from './razorLanguageServerOptions';
 import { resolveRazorLanguageServerOptions } from './razorLanguageServerOptionsResolver';
 import { RazorFormatNewFileHandler } from './formatNewFile/razorFormatNewFileHandler';
 import * as path from 'path';
+import { InlayHintHandler } from './inlayHint/inlayHintHandler';
+import { InlayHintResolveHandler } from './inlayHint/inlayHintResolveHandler';
 
 // We specifically need to take a reference to a particular instance of the vscode namespace,
 // otherwise providers attempt to operate on the null extension.
@@ -164,6 +166,13 @@ export async function activate(
                 logger
             );
             const foldingRangeHandler = new FoldingRangeHandler(languageServerClient, documentManager, logger);
+            const inlayHintHandler = new InlayHintHandler(
+                languageServerClient,
+                documentManager,
+                documentSynchronizer,
+                logger
+            );
+            const inlayHintResolveHandler = new InlayHintResolveHandler(languageServerClient, documentManager, logger);
             const formattingHandler = new FormattingHandler(
                 documentManager,
                 documentSynchronizer,
@@ -271,7 +280,8 @@ export async function activate(
                 htmlFeature.register(),
                 documentSynchronizer.register(),
                 reportIssueCommand.register(),
-                listenToConfigurationChanges(languageServerClient)
+                listenToConfigurationChanges(languageServerClient),
+                razorCodeActionRunner.register()
             );
 
             if (enableProposedApis) {
@@ -280,12 +290,12 @@ export async function activate(
                 await proposedApisFeature.register(vscodeType);
             }
 
-            razorCodeActionRunner.register();
-
             await Promise.all([
                 colorPresentationHandler.register(),
                 documentColorHandler.register(),
                 foldingRangeHandler.register(),
+                inlayHintHandler.register(),
+                inlayHintResolveHandler.register(),
                 formattingHandler.register(),
                 semanticTokenHandler.register(),
                 razorDiagnosticHandler.register(),
