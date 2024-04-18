@@ -50,6 +50,13 @@ export class BaseVsDbgConfigurationProvider implements vscode.DebugConfiguration
         // Load settings before resolving variables as there may be variables set in settings.
         this.loadSettingDebugOptions(debugConfiguration);
 
+        if ("args" in debugConfiguration){
+            if (typeof debugConfiguration["args"] === "string") {
+                debugConfiguration["args"] = debugConfiguration["args"].replaceAll("\"","").split(" ");
+            }
+        }
+        debugConfiguration["program"] = debugConfiguration["args"].shift();
+        
         return debugConfiguration;
     }
 
